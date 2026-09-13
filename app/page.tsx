@@ -1,4 +1,11 @@
 import { Hero } from '@/components/sparktrail/hero'
+import {
+  CommunityPreviewSection,
+  FinalCtaSection,
+  HowItWorksSection,
+  TrailJourneySection,
+  WhySection,
+} from '@/components/sparktrail/landing-sections'
 import { Navbar } from '@/components/sparktrail/navbar'
 import { NextSectionTeaser } from '@/components/sparktrail/next-section-teaser'
 
@@ -8,6 +15,11 @@ export default function Page() {
       <Navbar />
       <Hero />
       <NextSectionTeaser />
+      <WhySection />
+      <HowItWorksSection />
+      <TrailJourneySection />
+      <CommunityPreviewSection />
+      <FinalCtaSection />
     </main>
   )
 }
