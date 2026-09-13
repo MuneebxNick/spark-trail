@@ -1,7 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
+import 'lenis/dist/lenis.css'
 import './globals.css'
+import { SmoothScroll } from '@/components/animations/smooth-scroll'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -52,7 +54,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
       <body className="antialiased font-sans">
-        {children}
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
