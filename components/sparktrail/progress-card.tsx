@@ -19,7 +19,7 @@ function StatusBadge({ status }: { status: ProgressStatus }) {
   )
 }
 
-/** Minimal card used for floating status snippets in the hero composition. Callers must supply a width class via className. */
+/** Minimal card used for floating status snippets in the hero composition. */
 export function MiniProgressCard({
   status,
   text,
@@ -31,7 +31,7 @@ export function MiniProgressCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-[#111111]/[0.07] bg-white/95 p-4 shadow-[0_18px_40px_-18px_rgba(17,17,17,0.22)] backdrop-blur-sm ${className ?? ''}`}
+      className={`rounded-2xl border border-[#111111]/[0.06] bg-white p-[18px] shadow-[0_12px_32px_-10px_rgba(17,17,17,0.12)] ${className ?? ''}`}
     >
       <StatusBadge status={status} />
       <p className="mt-2.5 text-[13px] font-medium leading-snug text-[#111111]">
@@ -62,7 +62,7 @@ export function FeaturedProgressCard({
 }) {
   return (
     <div
-      className={`w-[336px] rounded-[28px] border border-[#111111]/[0.07] bg-white p-6 shadow-[0_44px_84px_-30px_rgba(17,17,17,0.32)] ${className ?? ''}`}
+      className={`w-[340px] rounded-[24px] border border-[#111111]/[0.06] bg-white p-6 shadow-[0_32px_64px_-20px_rgba(17,17,17,0.18)] ${className ?? ''}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ export function FeaturedProgressCard({
         ))}
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-[#111111]/[0.07] pt-4">
+      <div className="mt-5 flex items-center justify-between border-t border-[#111111]/[0.06] pt-4">
         <div className="flex items-center gap-4 text-[12px] font-medium text-[#737373]">
           <span className="flex items-center gap-1.5 transition-colors hover:text-[#111111]">
             <SparkIcon /> 126 Sparks

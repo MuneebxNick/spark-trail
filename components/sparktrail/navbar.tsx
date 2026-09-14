@@ -1,13 +1,24 @@
+'use client'
+
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { SparkMark } from './spark-mark'
 
 const NAV_LINKS = ['Explore', 'How It Works', 'Community']
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-[#111111]/[0.06] bg-[#F6F5EF]/85 backdrop-blur-md">
+    <motion.header 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="absolute top-0 z-50 w-full backdrop-blur-md border-b border-[#111111]/[0.06]"
+      style={{
+        backgroundColor: 'rgba(246, 245, 239, 0.85)'
+      }}
+    >
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10"
+        className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-10 py-4"
         aria-label="Primary"
       >
         <Link
@@ -28,7 +39,7 @@ export function Navbar() {
                 className="group relative inline-block py-1 text-[13.5px] font-medium text-[#111111]/65 transition-colors hover:text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111111]"
               >
                 {link}
-                <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-[#111111] transition-transform duration-300 group-hover:scale-x-100" />
+                <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-[#111111] transition-transform duration-300 ease-out group-hover:scale-x-100" />
               </Link>
             </li>
           ))}
@@ -49,6 +60,6 @@ export function Navbar() {
           </Link>
         </div>
       </nav>
-    </header>
+    </motion.header>
   )
 }

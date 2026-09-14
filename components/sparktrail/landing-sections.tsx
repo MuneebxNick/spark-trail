@@ -1,4 +1,13 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+
+if (typeof window !== 'undefined' && typeof window.matchMedia !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
 function Eyebrow({ children, tone = 'light' }: { children: string; tone?: 'light' | 'dark' }) {
   return (
@@ -16,46 +25,174 @@ function Eyebrow({ children, tone = 'light' }: { children: string; tone?: 'light
 /* 1. Why SparkTrail Exists — visual storytelling, no cards               */
 /* ---------------------------------------------------------------------- */
 
-export function WhySection() {
+function RevealText({ text, className }: { text: string; className?: string }) {
   return (
-    <section className="relative bg-[#F6F5EF] py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <Eyebrow>WHY SPARKTRAIL EXISTS</Eyebrow>
-        <h2 className="mt-5 max-w-3xl font-heading text-[34px] font-semibold leading-[1.12] tracking-tight text-[#111111] sm:text-[48px] md:text-[56px]">
-          Everyone shows you the result. Nobody shows you how they got there.
-        </h2>
+    <div className={`overflow-hidden pb-1 ${className || ''}`}>
+      <p className="reveal-text-block translate-y-[100%]">
+        {text.split(' ').map((word, i) => (
+          <span key={i} className="reveal-word transition-colors duration-75 text-[#111111]/20">
+            {word}{' '}
+          </span>
+        ))}
+      </p>
+    </div>
+  )
+}
 
-        <div className="mt-20 grid gap-12 border-t border-[#111111]/[0.08] pt-14 sm:grid-cols-2 md:gap-20">
-          <div>
-            <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#8A8A8A]">
-              The result
-            </p>
-            <div className="mt-8 flex items-center gap-3" aria-hidden="true">
-              <span className="h-3 w-3 rounded-full border-2 border-[#111111]/25" />
+export function WhySection() {
+  const containerRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const resultRef = useRef<HTMLDivElement>(null)
+  const trailRef = useRef<HTMLDivElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      })
+
+      // 0. Eyebrow Reveal
+      if (eyebrowRef.current) {
+        tl.to(eyebrowRef.current, { y: '0%', ease: 'none', duration: 0.5 })
+      }
+
+      // 1. Heading Masked Line Reveal
+      const headingLines = headingRef.current?.querySelectorAll('.why-heading-line')
+      if (headingLines) {
+        tl.to(headingLines, { y: '0%', ease: 'none', stagger: 0.2, duration: 1 })
+      }
+
+      // 2. Heading Color Reveal (Apple style text fill)
+      tl.to(headingRef.current, {
+        backgroundPositionX: '0%',
+        ease: 'none',
+        duration: 3,
+      }, '-=0.5')
+
+      // 3. The Result paragraph slide up & reveal
+      if (resultRef.current) {
+        const textBlock = resultRef.current.querySelector('.reveal-text-block')
+        const words = resultRef.current.querySelectorAll('.reveal-word')
+        
+        tl.to(textBlock, { y: '0%', ease: 'none', duration: 0.8 }, '-=1')
+        tl.to(words, { color: '#737373', ease: 'none', stagger: 0.1, duration: 1 }, '-=0.5')
+      }
+
+      // 4. The Trail visualization & synced text reveal
+      if (trailRef.current) {
+        const dots = trailRef.current.querySelectorAll('.trail-dot')
+        const lines = trailRef.current.querySelectorAll('.trail-line-fill')
+        const textBlock = trailRef.current.querySelector('.reveal-text-block')
+        const words = trailRef.current.querySelectorAll('.reveal-word')
+        
+        // Start trail animation
+        const trailStart = 5
+        const trailDuration = 3.5
+        
+        tl.to(textBlock, { y: '0%', ease: 'none', duration: 0.8 }, trailStart - 0.5)
+
+        // Trail animation sequence
+        tl.to(dots[0], { backgroundColor: '#7857FF', ease: 'none', duration: 0.5 }, trailStart)
+        tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 0.5)
+        tl.to(dots[1], { backgroundColor: '#111111', ease: 'none', duration: 0.5 }, trailStart + 1.0)
+        tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 1.5)
+        tl.to(dots[2], { backgroundColor: '#7857FF', ease: 'none', duration: 0.5 }, trailStart + 2.0)
+        tl.to(lines[2], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 2.5)
+        tl.to(dots[3], { backgroundColor: '#C7FF3D', ease: 'none', duration: 0.5 }, trailStart + 3.0)
+        
+        // Synced word reveal for the Trail paragraph
+        tl.to(words, { color: '#111111', ease: 'none', stagger: trailDuration / words.length, duration: 0.1 }, trailStart)
+      }
+
+    }, container)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[250vh]">
+      <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
+        <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+          <div className="overflow-hidden pb-1">
+            <div ref={eyebrowRef} className="translate-y-[100%]">
+              <Eyebrow>WHY SPARKTRAIL EXISTS</Eyebrow>
             </div>
-            <p className="mt-8 max-w-sm text-[17px] leading-relaxed text-[#737373]">
-              One post. One moment. A finished thing with no visible path to
-              how it got made.
-            </p>
           </div>
+          
+          <h2 
+            ref={headingRef}
+            className="mt-5 max-w-3xl font-heading text-[34px] font-semibold leading-[1.12] tracking-tight sm:text-[48px] md:text-[56px]"
+            style={{
+              backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+              backgroundSize: '200% 100%',
+              backgroundPositionX: '100%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            <span className="block overflow-hidden pb-1">
+              <span className="why-heading-line block translate-y-[100%]">Everyone shows you the result.</span>
+            </span>
+            <span className="block overflow-hidden pb-1">
+              <span className="why-heading-line block translate-y-[100%]">Nobody shows you how they got there.</span>
+            </span>
+          </h2>
 
-          <div>
-            <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#111111]">
-              The trail
-            </p>
-            <div className="mt-8 flex items-center gap-3" aria-hidden="true">
-              <span className="h-3 w-3 rounded-full bg-[#7857FF]" />
-              <span className="h-px w-8 border-t border-dashed border-[#111111]/25" />
-              <span className="h-3 w-3 rounded-full bg-[#111111]" />
-              <span className="h-px w-8 border-t border-dashed border-[#111111]/25" />
-              <span className="h-3 w-3 rounded-full bg-[#7857FF]" />
-              <span className="h-px w-8 border-t border-dashed border-[#111111]/25" />
-              <span className="h-3 w-3 rounded-full bg-[#C7FF3D]" />
+          <div className="mt-20 grid gap-12 border-t border-[#111111]/[0.08] pt-14 sm:grid-cols-2 md:gap-20">
+            {/* The Result */}
+            <div ref={resultRef}>
+              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#8A8A8A]">
+                The result
+              </p>
+              <div className="mt-8 flex items-center gap-3" aria-hidden="true">
+                <span className="h-3 w-3 rounded-full border-2 border-[#111111]/25" />
+              </div>
+              <RevealText 
+                text="One post. One moment. A finished thing with no visible path to how it got made."
+                className="mt-8 max-w-sm text-[17px] leading-relaxed"
+              />
             </div>
-            <p className="mt-8 max-w-sm text-[17px] leading-relaxed text-[#111111]">
-              Every attempt, every blocker, every small win logged along the
-              way &mdash; the part that actually explains the result.
-            </p>
+
+            {/* The Trail */}
+            <div ref={trailRef}>
+              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#111111]">
+                The trail
+              </p>
+              <div className="mt-8 flex items-center gap-3" aria-hidden="true">
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                </div>
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                </div>
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                </div>
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
+              </div>
+              <RevealText 
+                text="Every attempt, every blocker, every small win logged along the way — the part that actually explains the result."
+                className="mt-8 max-w-sm text-[17px] leading-relaxed"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -86,28 +223,136 @@ const HOW_STEPS = [
 ]
 
 export function HowItWorksSection() {
-  return (
-    <section className="relative bg-[#F6F5EF] pb-24 md:pb-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <Eyebrow>HOW SPARKTRAIL WORKS</Eyebrow>
-        <h2 className="mt-4 max-w-xl font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[40px]">
-          A simple loop, repeated one trail at a time.
-        </h2>
+  const containerRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+  const stepsRef = useRef<HTMLDivElement>(null)
 
-        <div className="mt-16 grid gap-10 border-t border-[#111111]/[0.08] pt-12 sm:grid-cols-3 sm:gap-8">
-          {HOW_STEPS.map((step) => (
-            <div key={step.number}>
-              <span className="font-heading text-[15px] font-semibold text-[#7857FF]">
-                {step.number}
-              </span>
-              <p className="mt-5 text-[19px] font-semibold text-[#111111]">
-                {step.title}
-              </p>
-              <p className="mt-2.5 max-w-xs text-[14.5px] leading-relaxed text-[#737373]">
-                {step.text}
-              </p>
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      })
+
+      // Eyebrow Reveal
+      if (eyebrowRef.current) {
+        tl.to(eyebrowRef.current, { y: '0%', ease: 'none', duration: 0.5 })
+      }
+
+      // Heading Masked Line Reveal & Color Reveal
+      const headingLines = headingRef.current?.querySelectorAll('.how-heading-line')
+      if (headingLines) {
+        tl.to(headingLines, { y: '0%', ease: 'none', stagger: 0.2, duration: 1 })
+      }
+
+      tl.to(headingRef.current, {
+        backgroundPositionX: '0%',
+        ease: 'none',
+        duration: 2.5,
+      }, '-=0.5')
+
+      if (stepsRef.current) {
+        const stepBlocks = stepsRef.current.querySelectorAll('.how-step')
+        const lines = stepsRef.current.querySelectorAll('.step-line')
+        
+        const stepStart = 3.5
+        
+        // Step 1
+        tl.to(stepBlocks[0].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart)
+        tl.to(stepBlocks[0].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart)
+        tl.to(stepBlocks[0].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart)
+        
+        // Line 1
+        tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 1 }, stepStart + 0.5)
+        
+        // Step 2
+        tl.to(stepBlocks[1].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 1.5)
+        tl.to(stepBlocks[1].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 1.5)
+        tl.to(stepBlocks[1].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 1.5)
+        
+        // Line 2
+        tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 1 }, stepStart + 2.0)
+        
+        // Step 3
+        tl.to(stepBlocks[2].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 3.0)
+        tl.to(stepBlocks[2].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 3.0)
+        tl.to(stepBlocks[2].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 3.0)
+      }
+
+    }, container)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[250vh]">
+      <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
+        <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+          <div className="overflow-hidden pb-1">
+            <div ref={eyebrowRef} className="translate-y-[100%]">
+              <Eyebrow>HOW SPARKTRAIL WORKS</Eyebrow>
             </div>
-          ))}
+          </div>
+          
+          <h2 
+            ref={headingRef}
+            className="mt-4 max-w-xl font-heading text-[32px] font-semibold leading-tight tracking-tight sm:text-[40px]"
+            style={{
+              backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+              backgroundSize: '200% 100%',
+              backgroundPositionX: '100%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            <span className="block overflow-hidden pb-1">
+              <span className="how-heading-line block translate-y-[100%]">A simple loop, repeated</span>
+            </span>
+            <span className="block overflow-hidden pb-1">
+              <span className="how-heading-line block translate-y-[100%]">one trail at a time.</span>
+            </span>
+          </h2>
+
+          <div ref={stepsRef} className="mt-16 grid gap-10 border-t border-[#111111]/[0.08] pt-12 sm:grid-cols-3 sm:gap-8">
+            {HOW_STEPS.map((step, index) => (
+              <div key={step.number} className="how-step flex flex-col">
+                <div className="flex items-center w-full overflow-hidden pb-1">
+                  <span className="step-el step-num font-heading text-[15px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
+                    {step.number}
+                  </span>
+                  {index < HOW_STEPS.length - 1 && (
+                    <div className="step-el ml-6 hidden h-px w-full max-w-[120px] bg-[#111111]/10 sm:block relative overflow-hidden translate-y-[100%]">
+                      <div className="step-line absolute inset-0 origin-left scale-x-0 bg-[#7857FF]" />
+                    </div>
+                  )}
+                </div>
+                <div className="overflow-hidden mt-5 pb-1">
+                  <p className="step-el step-text text-[19px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
+                    {step.title}
+                  </p>
+                </div>
+                <div className="overflow-hidden mt-2.5 pb-1">
+                  <p className="step-el step-text max-w-xs text-[14.5px] leading-relaxed text-[#111111]/20 transition-colors translate-y-[100%]">
+                    {step.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

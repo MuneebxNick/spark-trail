@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from 'next/font/google'
 import 'lenis/dist/lenis.css'
 import './globals.css'
 import { SmoothScroll } from '@/components/animations/smooth-scroll'
+import { CustomCursor } from '@/components/animations/custom-cursor'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -57,6 +58,7 @@ export default function RootLayout({
         <SmoothScroll>
           {children}
         </SmoothScroll>
+        <CustomCursor />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -175,3 +175,9 @@
     transform: translateY(-100%);
   }
 }
+
+/* Prevent GSAP ScrollTrigger pin-spacer from showing a white strip
+   on the dark "Progress has a story" section */
+.pin-spacer {
+  background-color: inherit !important;
+}
