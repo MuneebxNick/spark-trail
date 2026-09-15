@@ -31,10 +31,10 @@ export function MiniProgressCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-[#111111]/[0.06] bg-white p-[18px] shadow-[0_12px_32px_-10px_rgba(17,17,17,0.12)] ${className ?? ''}`}
+      className={`rounded-2xl border border-[#111111]/[0.06] dark:border-white/10 bg-white dark:bg-[#16171A] p-[18px] shadow-[0_12px_32px_-10px_rgba(17,17,17,0.12)] dark:shadow-[0_12px_32px_-10px_rgba(0,0,0,0.5)] transition-colors duration-200 ${className ?? ''}`}
     >
       <StatusBadge status={status} />
-      <p className="mt-2.5 text-[13px] font-medium leading-snug text-[#111111]">
+      <p className="mt-2.5 text-[13px] font-medium leading-snug text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
         {text}
       </p>
     </div>
@@ -45,7 +45,7 @@ function Avatar({ initials }: { initials: string }) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-semibold text-white shadow-sm"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white dark:border-[#22242A] bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-semibold text-white shadow-sm"
     >
       {initials}
     </span>
@@ -62,16 +62,16 @@ export function FeaturedProgressCard({
 }) {
   return (
     <div
-      className={`w-[340px] rounded-[24px] border border-[#111111]/[0.06] bg-white p-6 shadow-[0_32px_64px_-20px_rgba(17,17,17,0.18)] ${className ?? ''}`}
+      className={`w-[340px] rounded-[24px] border border-[#111111]/[0.06] dark:border-white/10 bg-white dark:bg-[#16171A] p-6 shadow-[0_32px_64px_-20px_rgba(17,17,17,0.18)] dark:shadow-[0_32px_64px_-20px_rgba(0,0,0,0.6)] transition-colors duration-200 ${className ?? ''}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar initials="SK" />
           <div>
-            <p className="text-[14.5px] font-semibold leading-tight text-[#111111]">
+            <p className="text-[14.5px] font-semibold leading-tight text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
               Sarah Khan
             </p>
-            <p className="mt-0.5 text-[12px] leading-tight text-[#8A8A8A]">
+            <p className="mt-0.5 text-[12px] leading-tight text-[#8A8A8A] dark:text-[#A1A1AA] transition-colors duration-200">
               @sarahcodes &middot; 2h
             </p>
           </div>
@@ -79,10 +79,10 @@ export function FeaturedProgressCard({
         <StatusBadge status="BUILDING" />
       </div>
 
-      <p className="mt-5 text-[16.5px] font-semibold leading-snug text-[#111111]">
+      <p className="mt-5 text-[16.5px] font-semibold leading-snug text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
         Authentication finally works.
       </p>
-      <p className="mt-2 text-[13.5px] leading-relaxed text-[#737373]">
+      <p className="mt-2 text-[13.5px] leading-relaxed text-[#737373] dark:text-[#A1A1AA] transition-colors duration-200">
         Connected my Express API to PostgreSQL and shipped the first working
         login flow.
       </p>
@@ -91,19 +91,19 @@ export function FeaturedProgressCard({
         {['#nextjs', '#nodejs'].map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-[#111111]/[0.06] bg-[#F6F5EF] px-2.5 py-1 text-[11px] font-medium text-[#737373]"
+            className="rounded-full border border-[#111111]/[0.06] dark:border-white/10 bg-[#F6F5EF] dark:bg-[#22242A] px-2.5 py-1 text-[11px] font-medium text-[#737373] dark:text-[#A1A1AA] transition-colors duration-200"
           >
             {tag}
           </span>
         ))}
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-[#111111]/[0.06] pt-4">
-        <div className="flex items-center gap-4 text-[12px] font-medium text-[#737373]">
-          <span className="flex items-center gap-1.5 transition-colors hover:text-[#111111]">
+      <div className="mt-5 flex items-center justify-between border-t border-[#111111]/[0.06] dark:border-white/10 pt-4">
+        <div className="flex items-center gap-4 text-[12px] font-medium text-[#737373] dark:text-[#A1A1AA]">
+          <span className="flex items-center gap-1.5 transition-colors hover:text-[#111111] dark:hover:text-[#F6F5EF]">
             <SparkIcon /> 126 Sparks
           </span>
-          <span className="flex items-center gap-1.5 transition-colors hover:text-[#111111]">
+          <span className="flex items-center gap-1.5 transition-colors hover:text-[#111111] dark:hover:text-[#F6F5EF]">
             <CommentIcon /> 18 Comments
           </span>
         </div>
@@ -154,9 +154,8 @@ function BookmarkIcon() {
       aria-hidden="true"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#111111"
+      className="h-4 w-4 stroke-[#111111] dark:stroke-[#F6F5EF] transition-colors duration-200"
       strokeWidth="1.6"
-      className="h-4 w-4"
     >
       <path d="M6 3h12v18l-6-4-6 4V3Z" />
     </svg>

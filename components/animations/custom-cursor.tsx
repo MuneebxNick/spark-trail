@@ -160,6 +160,16 @@ export function CustomCursor() {
       yTo(e.clientY)
       checkBackground(e.clientX, e.clientY)
 
+      // Safety check for stuck hover/label states after DOM mutations or unmounts
+      if (isHovering || isLabel) {
+        const elUnderPoint = document.elementFromPoint(e.clientX, e.clientY)
+        const stillInteractive = elUnderPoint?.closest?.(INTERACTIVE_SELECTOR)
+        const stillLabel = elUnderPoint?.closest?.(`[${LABEL_ATTR}]`)
+        if (!stillInteractive && !stillLabel) {
+          toDefault()
+        }
+      }
+
       // Magnetic pull
       if (activeMagnetic) {
         const rect = activeMagnetic.getBoundingClientRect()

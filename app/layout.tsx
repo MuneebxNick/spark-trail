@@ -5,6 +5,7 @@ import 'lenis/dist/lenis.css'
 import './globals.css'
 import { SmoothScroll } from '@/components/animations/smooth-scroll'
 import { CustomCursor } from '@/components/animations/custom-cursor'
+import { ThemeProvider } from '@/lib/theme-provider'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -43,9 +44,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
+  colorScheme: 'light dark',
   themeColor: '#F6F5EF',
 }
+
+const themeScript = `(function(){try{var t=localStorage.getItem('sparktrail-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');}else{document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}}catch(e){}})();`
 
 export default function RootLayout({
   children,
@@ -53,12 +56,17 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="antialiased font-sans">
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
-        <CustomCursor />
+        <ThemeProvider>
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
+          <CustomCursor />
+        </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -13,7 +13,7 @@ import { BackToTop } from '@/components/sparktrail/back-to-top'
 
 export default function Page() {
   return (
-    <main className="bg-[#F6F5EF]">
+    <main className="bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-300">
       <Navbar />
       <Hero />
       <NextSectionTeaser />

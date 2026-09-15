@@ -13,9 +13,8 @@ if (typeof window !== 'undefined' && typeof window.matchMedia !== 'undefined') {
 function Eyebrow({ children, tone = 'light' }: { children: string; tone?: 'light' | 'dark' }) {
   return (
     <p
-      className={`text-[12px] font-semibold tracking-[0.14em] ${
-        tone === 'dark' ? 'text-[#C7FF3D]' : 'text-[#7857FF]'
-      }`}
+      className={`text-[12px] font-semibold tracking-[0.14em] ${tone === 'dark' ? 'text-[#C7FF3D]' : 'text-[#7857FF]'
+        }`}
     >
       {children}
     </p>
@@ -87,9 +86,9 @@ export function WhySection() {
       if (resultRef.current) {
         const textBlock = resultRef.current.querySelector('.reveal-text-block')
         const words = resultRef.current.querySelectorAll('.reveal-word')
-        
+
         tl.to(textBlock, { y: '0%', ease: 'none', duration: 0.8 }, '-=1')
-        tl.to(words, { color: '#737373', ease: 'none', stagger: 0.1, duration: 1 }, '-=0.5')
+        tl.to(words, { color: 'var(--why-text-muted)', ease: 'none', stagger: 0.1, duration: 1 }, '-=0.5')
       }
 
       // 4. The Trail visualization & synced text reveal
@@ -98,24 +97,24 @@ export function WhySection() {
         const lines = trailRef.current.querySelectorAll('.trail-line-fill')
         const textBlock = trailRef.current.querySelector('.reveal-text-block')
         const words = trailRef.current.querySelectorAll('.reveal-word')
-        
+
         // Start trail animation
         const trailStart = 5
         const trailDuration = 3.5
-        
+
         tl.to(textBlock, { y: '0%', ease: 'none', duration: 0.8 }, trailStart - 0.5)
 
         // Trail animation sequence
         tl.to(dots[0], { backgroundColor: '#7857FF', ease: 'none', duration: 0.5 }, trailStart)
         tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 0.5)
-        tl.to(dots[1], { backgroundColor: '#111111', ease: 'none', duration: 0.5 }, trailStart + 1.0)
+        tl.to(dots[1], { backgroundColor: 'var(--why-text-fg)', ease: 'none', duration: 0.5 }, trailStart + 1.0)
         tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 1.5)
         tl.to(dots[2], { backgroundColor: '#7857FF', ease: 'none', duration: 0.5 }, trailStart + 2.0)
         tl.to(lines[2], { scaleX: 1, ease: 'none', duration: 0.5 }, trailStart + 2.5)
         tl.to(dots[3], { backgroundColor: '#C7FF3D', ease: 'none', duration: 0.5 }, trailStart + 3.0)
-        
+
         // Synced word reveal for the Trail paragraph
-        tl.to(words, { color: '#111111', ease: 'none', stagger: trailDuration / words.length, duration: 0.1 }, trailStart)
+        tl.to(words, { color: 'var(--why-text-fg)', ease: 'none', stagger: trailDuration / words.length, duration: 0.1 }, trailStart)
 
         // Completion Hold — ensures final green lime dot & full text stay 100% complete before next section enters
         tl.to({}, { duration: 1.5 }, trailStart + 3.5)
@@ -127,7 +126,7 @@ export function WhySection() {
   }, [])
 
   return (
-    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[260vh]">
+    <section ref={containerRef} className="relative bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-300 h-[260vh]">
       <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="overflow-hidden pb-1">
@@ -135,12 +134,12 @@ export function WhySection() {
               <Eyebrow>WHY SPARKTRAIL EXISTS</Eyebrow>
             </div>
           </div>
-          
-          <h2 
+
+          <h2
             ref={headingRef}
             className="mt-5 max-w-3xl font-heading text-[34px] font-semibold leading-[1.12] tracking-tight sm:text-[48px] md:text-[56px]"
             style={{
-              backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+              backgroundImage: 'var(--section-heading-gradient)',
               backgroundSize: '200% 100%',
               backgroundPositionX: '100%',
               WebkitBackgroundClip: 'text',
@@ -157,16 +156,16 @@ export function WhySection() {
             </span>
           </h2>
 
-          <div className="mt-20 grid gap-12 border-t border-[#111111]/[0.08] pt-14 sm:grid-cols-2 md:gap-20">
+          <div className="mt-20 grid gap-12 border-t border-[#111111]/[0.08] dark:border-white/10 pt-14 sm:grid-cols-2 md:gap-20 transition-colors duration-200">
             {/* The Result */}
             <div ref={resultRef}>
-              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#8A8A8A]">
+              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#8A8A8A] dark:text-[#A1A1AA] transition-colors duration-200">
                 The result
               </p>
               <div className="mt-8 flex items-center gap-3" aria-hidden="true">
-                <span className="h-3 w-3 rounded-full border-2 border-[#111111]/25" />
+                <span className="h-3 w-3 rounded-full border-2 border-[#111111]/25 dark:border-white/30 transition-colors duration-200" />
               </div>
-              <RevealText 
+              <RevealText
                 text="One post. One moment. A finished thing with no visible path to how it got made."
                 className="mt-8 max-w-sm text-[17px] leading-relaxed"
               />
@@ -174,25 +173,25 @@ export function WhySection() {
 
             {/* The Trail */}
             <div ref={trailRef}>
-              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#111111]">
+              <p className="font-heading text-[15px] font-semibold uppercase tracking-[0.1em] text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
                 The trail
               </p>
               <div className="mt-8 flex items-center gap-3" aria-hidden="true">
-                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
-                <div className="relative h-px w-8 bg-[#111111]/10">
-                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 dark:bg-white/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10 dark:bg-white/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40 dark:bg-white/40" />
                 </div>
-                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
-                <div className="relative h-px w-8 bg-[#111111]/10">
-                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 dark:bg-white/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10 dark:bg-white/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40 dark:bg-white/40" />
                 </div>
-                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
-                <div className="relative h-px w-8 bg-[#111111]/10">
-                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40" />
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 dark:bg-white/10 transition-colors" />
+                <div className="relative h-px w-8 bg-[#111111]/10 dark:bg-white/10">
+                  <div className="trail-line-fill absolute inset-0 origin-left scale-x-0 bg-[#111111]/40 dark:bg-white/40" />
                 </div>
-                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 transition-colors" />
+                <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 dark:bg-white/10 transition-colors" />
               </div>
-              <RevealText 
+              <RevealText
                 text="Every attempt, every blocker, every small win logged along the way — the part that actually explains the result."
                 className="mt-8 max-w-sm text-[17px] leading-relaxed"
               />
@@ -270,30 +269,30 @@ export function HowItWorksSection() {
       if (stepsRef.current) {
         const stepBlocks = stepsRef.current.querySelectorAll('.how-step')
         const lines = stepsRef.current.querySelectorAll('.step-line')
-        
+
         const stepStart = 2.0
-        
+
         // Step 1
         tl.to(stepBlocks[0].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart)
-        tl.to(stepBlocks[0].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart)
+        tl.to(stepBlocks[0].querySelectorAll('.step-text'), { color: 'var(--how-text-fg)', ease: 'none', duration: 0.5 }, stepStart)
         tl.to(stepBlocks[0].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart)
-        
+
         // Line 1 fill (01 -> 02)
         tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 0.5)
-        
+
         // Step 2
         tl.to(stepBlocks[1].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 1.7)
-        tl.to(stepBlocks[1].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 1.7)
+        tl.to(stepBlocks[1].querySelectorAll('.step-text'), { color: 'var(--how-text-fg)', ease: 'none', duration: 0.5 }, stepStart + 1.7)
         tl.to(stepBlocks[1].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 1.7)
-        
+
         // Line 2 fill (02 -> 03)
         tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 2.2)
-        
+
         // Step 3
         tl.to(stepBlocks[2].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 3.4)
-        tl.to(stepBlocks[2].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 3.4)
+        tl.to(stepBlocks[2].querySelectorAll('.step-text'), { color: 'var(--how-text-fg)', ease: 'none', duration: 0.5 }, stepStart + 3.4)
         tl.to(stepBlocks[2].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 3.4)
-        
+
         // Line 3 fill (03 complete)
         tl.to(lines[2], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 3.9)
 
@@ -307,7 +306,7 @@ export function HowItWorksSection() {
   }, [])
 
   return (
-    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[260vh]">
+    <section ref={containerRef} className="relative bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-300 h-[260vh]">
       <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="overflow-hidden pb-1">
@@ -315,12 +314,12 @@ export function HowItWorksSection() {
               <Eyebrow>HOW SPARKTRAIL WORKS</Eyebrow>
             </div>
           </div>
-          
-          <h2 
+
+          <h2
             ref={headingRef}
             className="mt-4 max-w-xl font-heading text-[32px] font-semibold leading-tight tracking-tight sm:text-[40px]"
             style={{
-              backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+              backgroundImage: 'var(--section-heading-gradient)',
               backgroundSize: '200% 100%',
               backgroundPositionX: '100%',
               WebkitBackgroundClip: 'text',
@@ -337,24 +336,24 @@ export function HowItWorksSection() {
             </span>
           </h2>
 
-          <div ref={stepsRef} className="mt-16 grid gap-10 border-t border-[#111111]/[0.08] pt-12 sm:grid-cols-3 sm:gap-8">
+          <div ref={stepsRef} className="mt-16 grid gap-10 border-t border-[#111111]/[0.08] dark:border-white/10 pt-12 sm:grid-cols-3 sm:gap-8 transition-colors duration-200">
             {HOW_STEPS.map((step) => (
               <div key={step.number} className="how-step flex flex-col">
                 <div className="flex items-center w-full overflow-hidden pb-1">
-                  <span className="step-el step-num font-heading text-[15px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
+                  <span className="step-el step-num font-heading text-[15px] font-semibold text-[#111111]/20 dark:text-white/20 transition-colors translate-y-[100%]">
                     {step.number}
                   </span>
-                  <div className="step-el ml-6 hidden h-px w-full max-w-[120px] bg-[#111111]/10 sm:block relative overflow-hidden translate-y-[100%]">
+                  <div className="step-el ml-6 hidden h-px w-full max-w-[120px] bg-[#111111]/10 dark:bg-white/10 sm:block relative overflow-hidden translate-y-[100%] transition-colors duration-200">
                     <div className="step-line absolute inset-0 origin-left scale-x-0 bg-[#7857FF]" />
                   </div>
                 </div>
                 <div className="overflow-hidden mt-5 pb-1">
-                  <p className="step-el step-text text-[19px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
+                  <p className="step-el step-text text-[19px] font-semibold text-[#111111]/20 dark:text-white/20 transition-colors translate-y-[100%]">
                     {step.title}
                   </p>
                 </div>
                 <div className="overflow-hidden mt-2.5 pb-1">
-                  <p className="step-el step-text max-w-xs text-[14.5px] leading-relaxed text-[#111111]/20 transition-colors translate-y-[100%]">
+                  <p className="step-el step-text max-w-xs text-[14.5px] leading-relaxed text-[#111111]/20 dark:text-white/20 transition-colors translate-y-[100%]">
                     {step.text}
                   </p>
                 </div>
@@ -616,37 +615,37 @@ const FEED_POSTS: {
   sparks: number
   comments: number
 }[] = [
-  {
-    initials: 'DM',
-    name: 'Diego M.',
-    handle: '@diegobuilds',
-    time: '12m',
-    status: 'STUCK',
-    text: 'Redis connection keeps timing out on cold start. Anyone hit this with serverless functions?',
-    sparks: 34,
-    comments: 11,
-  },
-  {
-    initials: 'PN',
-    name: 'Priya N.',
-    handle: '@priyacodes',
-    time: '48m',
-    status: 'LEARNING',
-    text: 'Three days into learning Rust. The borrow checker is finally starting to click.',
-    sparks: 89,
-    comments: 15,
-  },
-  {
-    initials: 'JL',
-    name: 'Jonah L.',
-    handle: '@jonahships',
-    time: '2h',
-    status: 'WIN',
-    text: 'Shipped the waitlist page after two weeks of evenings. First 40 signups already in.',
-    sparks: 214,
-    comments: 27,
-  },
-]
+    {
+      initials: 'DM',
+      name: 'Diego M.',
+      handle: '@diegobuilds',
+      time: '12m',
+      status: 'STUCK',
+      text: 'Redis connection keeps timing out on cold start. Anyone hit this with serverless functions?',
+      sparks: 34,
+      comments: 11,
+    },
+    {
+      initials: 'PN',
+      name: 'Priya N.',
+      handle: '@priyacodes',
+      time: '48m',
+      status: 'LEARNING',
+      text: 'Three days into learning Rust. The borrow checker is finally starting to click.',
+      sparks: 89,
+      comments: 15,
+    },
+    {
+      initials: 'JL',
+      name: 'Jonah L.',
+      handle: '@jonahships',
+      time: '2h',
+      status: 'WIN',
+      text: 'Shipped the waitlist page after two weeks of evenings. First 40 signups already in.',
+      sparks: 214,
+      comments: 27,
+    },
+  ]
 
 function FeedPost({ post }: { post: (typeof FEED_POSTS)[number] }) {
   return (
@@ -660,10 +659,10 @@ function FeedPost({ post }: { post: (typeof FEED_POSTS)[number] }) {
             {post.initials}
           </span>
           <div>
-            <p className="text-[13.5px] font-semibold leading-tight text-[#111111]">
+            <p className="text-[13.5px] font-semibold leading-tight text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
               {post.name}
             </p>
-            <p className="mt-0.5 text-[11.5px] leading-tight text-[#8A8A8A]">
+            <p className="mt-0.5 text-[11.5px] leading-tight text-[#8A8A8A] dark:text-[#A1A1AA] transition-colors duration-200">
               {post.handle} &middot; {post.time}
             </p>
           </div>
@@ -675,16 +674,16 @@ function FeedPost({ post }: { post: (typeof FEED_POSTS)[number] }) {
         </span>
       </div>
 
-      <p className="mt-4 text-[14.5px] leading-relaxed text-[#111111]">
+      <p className="mt-4 text-[14.5px] leading-relaxed text-[#111111] dark:text-[#F6F5EF] transition-colors duration-200">
         {post.text}
       </p>
 
-      <div className="mt-4 flex items-center gap-4 text-[12px] font-medium text-[#737373]">
+      <div className="mt-4 flex items-center gap-4 text-[12px] font-medium text-[#737373] dark:text-[#A1A1AA] transition-colors duration-200">
         <span className="flex items-center gap-1.5">
-          <FeedSparkIcon /> {post.sparks} Sparks
+          <FeedSparkIcon /> <span className="post-sparks-num">{post.sparks}</span> Sparks
         </span>
         <span className="flex items-center gap-1.5">
-          <FeedCommentIcon /> {post.comments} Comments
+          <FeedCommentIcon /> <span className="post-comments-num">{post.comments}</span> Comments
         </span>
       </div>
     </div>
@@ -750,7 +749,7 @@ export function CommunityPreviewSection() {
         // 1. DIEGO POST: Reveal 0% -> 25%, Settle 25% -> 32%
         // ----------------------------------------------------
         tl.to(postInners[0], { y: '0%', ease: 'none', duration: 25 }, 0)
-        tl.to(postCards[0], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 15)
+        tl.to(postCards[0], { backgroundColor: 'var(--community-card-active-bg)', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 15)
 
         const diegoCounts = { s: 34, c: 11 }
         tl.to(
@@ -773,9 +772,9 @@ export function CommunityPreviewSection() {
         // ----------------------------------------------------
         // 2. PRIYA POST: Reveal 32% -> 57%, Settle 57% -> 64%
         // ----------------------------------------------------
-        tl.to(postCards[0], { backgroundColor: '#FFFFFF', borderColor: 'rgba(17, 17, 17, 0.07)', ease: 'none', duration: 6 }, 32)
+        tl.to(postCards[0], { backgroundColor: 'var(--community-card-bg)', borderColor: 'var(--community-card-border)', ease: 'none', duration: 6 }, 32)
         tl.to(postInners[1], { y: '0%', ease: 'none', duration: 25 }, 32)
-        tl.to(postCards[1], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 47)
+        tl.to(postCards[1], { backgroundColor: 'var(--community-card-active-bg)', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 47)
 
         const priyaCounts = { s: 89, c: 15 }
         tl.to(
@@ -798,9 +797,9 @@ export function CommunityPreviewSection() {
         // ----------------------------------------------------
         // 3. JONAH POST: Reveal 64% -> 89%, Settle 89% -> 94%
         // ----------------------------------------------------
-        tl.to(postCards[1], { backgroundColor: '#FFFFFF', borderColor: 'rgba(17, 17, 17, 0.07)', ease: 'none', duration: 6 }, 64)
+        tl.to(postCards[1], { backgroundColor: 'var(--community-card-bg)', borderColor: 'var(--community-card-border)', ease: 'none', duration: 6 }, 64)
         tl.to(postInners[2], { y: '0%', ease: 'none', duration: 25 }, 64)
-        tl.to(postCards[2], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 79)
+        tl.to(postCards[2], { backgroundColor: 'var(--community-card-active-bg)', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 79)
 
         const jonahCounts = { s: 214, c: 27 }
         tl.to(
@@ -831,7 +830,7 @@ export function CommunityPreviewSection() {
   }, [])
 
   return (
-    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[220vh]">
+    <section ref={containerRef} className="relative bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-300 h-[220vh]">
       <div className="sticky top-0 flex min-h-[100svh] w-full flex-col justify-center overflow-hidden py-12 md:py-16">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:items-center">
@@ -844,9 +843,9 @@ export function CommunityPreviewSection() {
               </div>
               <h2
                 ref={headingRef}
-                className="mt-4 font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[42px] md:text-[48px]"
+                className="mt-4 font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] dark:text-[#F6F5EF] sm:text-[42px] md:text-[48px]"
                 style={{
-                  backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+                  backgroundImage: 'var(--section-heading-gradient)',
                   backgroundSize: '200% 100%',
                   backgroundPositionX: '100%',
                   WebkitBackgroundClip: 'text',
@@ -868,20 +867,20 @@ export function CommunityPreviewSection() {
             <div className="w-full flex justify-center lg:justify-end">
               <div
                 ref={cardRef}
-                className="w-full max-w-lg overflow-hidden rounded-[28px] border border-[#111111]/[0.07] bg-white shadow-[0_30px_70px_-40px_rgba(17,17,17,0.22)]"
+                className="w-full max-w-lg overflow-hidden rounded-[28px] border border-[#111111]/[0.07] dark:border-white/10 bg-white dark:bg-[#16171A] shadow-[0_30px_70px_-40px_rgba(17,17,17,0.22)] dark:shadow-[0_30px_70px_-40px_rgba(0,0,0,0.6)] transition-colors duration-200"
               >
                 {/* Live activity indicator header */}
-                <div className="flex items-center justify-between border-b border-[#111111]/[0.07] px-7 py-3.5 bg-[#FAFAFA]">
+                <div className="flex items-center justify-between border-b border-[#111111]/[0.07] dark:border-white/10 px-7 py-3.5 bg-[#FAFAFA] dark:bg-[#1E2024] transition-colors duration-200">
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#10B981] opacity-75" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]" />
                     </span>
-                    <span className="font-heading text-[10.5px] font-bold tracking-[0.12em] uppercase text-[#737373]">
+                    <span className="font-heading text-[10.5px] font-bold tracking-[0.12em] uppercase text-[#737373] dark:text-[#A1A1AA] transition-colors duration-200">
                       Live Feed Activity
                     </span>
                   </div>
-                  <span className="text-[11px] font-medium text-[#8A8A8A]">
+                  <span className="text-[11px] font-medium text-[#8A8A8A] dark:text-[#71717A] transition-colors duration-200">
                     Real-time updates
                   </span>
                 </div>
@@ -890,7 +889,7 @@ export function CommunityPreviewSection() {
                   {FEED_POSTS.map((post) => (
                     <div
                       key={post.handle}
-                      className="community-post-card overflow-hidden border-b border-[#111111]/[0.07] last:border-0 transition-colors duration-300 bg-white"
+                      className="community-post-card overflow-hidden border-b border-[#111111]/[0.07] dark:border-white/10 last:border-0 transition-colors duration-300 bg-white dark:bg-[#16171A]"
                     >
                       <div className="community-post-inner translate-y-[100%]">
                         <FeedPost post={post} />

@@ -49,6 +49,20 @@
 
 :root {
   color-scheme: light;
+  --theme-bg: #F6F5EF;
+  --theme-fg: #111111;
+  --theme-fg-muted: #737373;
+  --theme-card-bg: #FFFFFF;
+  --theme-card-bg-active: #F9F9F8;
+  --theme-card-border: rgba(17, 17, 17, 0.07);
+  --theme-border-subtle: rgba(17, 17, 17, 0.08);
+  --section-heading-gradient: linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%);
+  --why-text-muted: #737373;
+  --why-text-fg: #111111;
+  --how-text-fg: #111111;
+  --community-card-bg: #FFFFFF;
+  --community-card-active-bg: #F9F9F8;
+  --community-card-border: rgba(17, 17, 17, 0.07);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -85,6 +99,20 @@
 
 .dark {
   color-scheme: dark;
+  --theme-bg: #0D0E10;
+  --theme-fg: #FFFFFF;
+  --theme-fg-muted: #D4D4D8;
+  --theme-card-bg: #16171A;
+  --theme-card-bg-active: #22242A;
+  --theme-card-border: rgba(255, 255, 255, 0.12);
+  --theme-border-subtle: rgba(255, 255, 255, 0.12);
+  --section-heading-gradient: linear-gradient(to right, #FFFFFF 50%, rgba(255, 255, 255, 0.25) 50%);
+  --why-text-muted: #D4D4D8;
+  --why-text-fg: #FFFFFF;
+  --how-text-fg: #FFFFFF;
+  --community-card-bg: #16171A;
+  --community-card-active-bg: #22242A;
+  --community-card-border: rgba(255, 255, 255, 0.12);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
