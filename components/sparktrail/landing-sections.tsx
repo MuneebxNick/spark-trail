@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import { MagneticButton } from '@/components/animations/magnetic-button'
 
 if (typeof window !== 'undefined' && typeof window.matchMedia !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -115,6 +116,9 @@ export function WhySection() {
         
         // Synced word reveal for the Trail paragraph
         tl.to(words, { color: '#111111', ease: 'none', stagger: trailDuration / words.length, duration: 0.1 }, trailStart)
+
+        // Completion Hold — ensures final green lime dot & full text stay 100% complete before next section enters
+        tl.to({}, { duration: 1.5 }, trailStart + 3.5)
       }
 
     }, container)
@@ -123,7 +127,7 @@ export function WhySection() {
   }, [])
 
   return (
-    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[250vh]">
+    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[260vh]">
       <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="overflow-hidden pb-1">
@@ -260,35 +264,41 @@ export function HowItWorksSection() {
       tl.to(headingRef.current, {
         backgroundPositionX: '0%',
         ease: 'none',
-        duration: 2.5,
-      }, '-=0.5')
+        duration: 1.8,
+      }, 0.2)
 
       if (stepsRef.current) {
         const stepBlocks = stepsRef.current.querySelectorAll('.how-step')
         const lines = stepsRef.current.querySelectorAll('.step-line')
         
-        const stepStart = 3.5
+        const stepStart = 2.0
         
         // Step 1
         tl.to(stepBlocks[0].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart)
         tl.to(stepBlocks[0].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart)
         tl.to(stepBlocks[0].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart)
         
-        // Line 1
-        tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 1 }, stepStart + 0.5)
+        // Line 1 fill (01 -> 02)
+        tl.to(lines[0], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 0.5)
         
         // Step 2
-        tl.to(stepBlocks[1].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 1.5)
-        tl.to(stepBlocks[1].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 1.5)
-        tl.to(stepBlocks[1].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 1.5)
+        tl.to(stepBlocks[1].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 1.7)
+        tl.to(stepBlocks[1].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 1.7)
+        tl.to(stepBlocks[1].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 1.7)
         
-        // Line 2
-        tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 1 }, stepStart + 2.0)
+        // Line 2 fill (02 -> 03)
+        tl.to(lines[1], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 2.2)
         
         // Step 3
-        tl.to(stepBlocks[2].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 3.0)
-        tl.to(stepBlocks[2].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 3.0)
-        tl.to(stepBlocks[2].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 3.0)
+        tl.to(stepBlocks[2].querySelectorAll('.step-el'), { y: '0%', ease: 'none', stagger: 0.1, duration: 0.5 }, stepStart + 3.4)
+        tl.to(stepBlocks[2].querySelectorAll('.step-text'), { color: '#111111', ease: 'none', duration: 0.5 }, stepStart + 3.4)
+        tl.to(stepBlocks[2].querySelector('.step-num'), { color: '#7857FF', ease: 'none', duration: 0.5 }, stepStart + 3.4)
+        
+        // Line 3 fill (03 complete)
+        tl.to(lines[2], { scaleX: 1, ease: 'none', duration: 1.2 }, stepStart + 3.9)
+
+        // Step 03 Completion Hold — ensures Step 03 fill reaches 100% and holds before next section appears
+        tl.to({}, { duration: 1.8 }, stepStart + 5.1)
       }
 
     }, container)
@@ -297,7 +307,7 @@ export function HowItWorksSection() {
   }, [])
 
   return (
-    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[250vh]">
+    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[260vh]">
       <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
         <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
           <div className="overflow-hidden pb-1">
@@ -328,17 +338,15 @@ export function HowItWorksSection() {
           </h2>
 
           <div ref={stepsRef} className="mt-16 grid gap-10 border-t border-[#111111]/[0.08] pt-12 sm:grid-cols-3 sm:gap-8">
-            {HOW_STEPS.map((step, index) => (
+            {HOW_STEPS.map((step) => (
               <div key={step.number} className="how-step flex flex-col">
                 <div className="flex items-center w-full overflow-hidden pb-1">
                   <span className="step-el step-num font-heading text-[15px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
                     {step.number}
                   </span>
-                  {index < HOW_STEPS.length - 1 && (
-                    <div className="step-el ml-6 hidden h-px w-full max-w-[120px] bg-[#111111]/10 sm:block relative overflow-hidden translate-y-[100%]">
-                      <div className="step-line absolute inset-0 origin-left scale-x-0 bg-[#7857FF]" />
-                    </div>
-                  )}
+                  <div className="step-el ml-6 hidden h-px w-full max-w-[120px] bg-[#111111]/10 sm:block relative overflow-hidden translate-y-[100%]">
+                    <div className="step-line absolute inset-0 origin-left scale-x-0 bg-[#7857FF]" />
+                  </div>
                 </div>
                 <div className="overflow-hidden mt-5 pb-1">
                   <p className="step-el step-text text-[19px] font-semibold text-[#111111]/20 transition-colors translate-y-[100%]">
@@ -363,46 +371,195 @@ export function HowItWorksSection() {
 /* 3. Trail Journey — the visual path, SparkTrail's core identity         */
 /* ---------------------------------------------------------------------- */
 
-const JOURNEY_STAGES: { label: string; dot: string }[] = [
-  { label: 'Idea', dot: '#8A8A8A' },
-  { label: 'Building', dot: '#C7FF3D' },
-  { label: 'Blocked', dot: '#111111' },
-  { label: 'Learning', dot: '#7857FF' },
-  { label: 'Shipped', dot: '#C7FF3D' },
+/* ---------------------------------------------------------------------- */
+/* 3. Trail Journey — the visual path, SparkTrail's core identity         */
+/* ---------------------------------------------------------------------- */
+
+const JOURNEY_STAGES = [
+  {
+    label: 'Idea',
+    description: 'The initial spark. A problem worth solving.',
+    color: '#71717A',
+  },
+  {
+    label: 'Building',
+    description: 'Hands-on work. Turning concept into code.',
+    color: '#fff23dff',
+  },
+  {
+    label: 'Blocked',
+    description: 'The inevitable wall. Finding the bug or limitation.',
+    color: '#FF5C5C',
+  },
+  {
+    label: 'Learning',
+    description: 'The breakthrough. Insights gained through iteration.',
+    color: '#7C5CFF',
+  },
+  {
+    label: 'Shipped',
+    description: 'Out in the wild. Ready for the real world.',
+    color: '#C7FF3D',
+  },
 ]
 
 export function TrailJourneySection() {
+  const containerRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      })
+
+      // 0. Eyebrow Reveal
+      if (eyebrowRef.current) {
+        tl.to(eyebrowRef.current, { y: '0%', ease: 'none', duration: 0.5 })
+      }
+
+      // 1. Heading Masked Line Reveal
+      const headingLines = headingRef.current?.querySelectorAll('.journey-heading-line')
+      if (headingLines) {
+        tl.to(headingLines, { y: '0%', ease: 'none', stagger: 0.2, duration: 1 })
+      }
+
+      // 2. Heading Color Reveal
+      tl.to(headingRef.current, {
+        backgroundPositionX: '0%',
+        ease: 'none',
+        duration: 2.5,
+      }, '-=0.5')
+
+      // 3. Timeline progressive activation
+      if (timelineRef.current) {
+        const stages = timelineRef.current.querySelectorAll('.journey-stage')
+        const lines = timelineRef.current.querySelectorAll('.journey-line-fill')
+
+        let cursor = 3.0
+
+        stages.forEach((stage, index) => {
+          const dot = stage.querySelector('.journey-dot')
+          const label = stage.querySelector('.journey-label')
+          const desc = stage.querySelector('.journey-desc')
+          const stageColor = JOURNEY_STAGES[index].color
+
+          // GSAP controls opacity & glow progress without overriding background colors
+          tl.to(
+            dot,
+            {
+              opacity: 1,
+              boxShadow: `0 0 14px ${stageColor}AA`,
+              ease: 'none',
+              duration: 0.4,
+            },
+            cursor
+          )
+          tl.to(label, { color: '#FFFFFF', ease: 'none', duration: 0.4 }, cursor)
+          tl.to(desc, { opacity: 1, y: 0, ease: 'none', duration: 0.4 }, cursor)
+
+          cursor += 0.4
+
+          // Draw connecting line to next dot
+          if (index < lines.length) {
+            tl.to(lines[index], { scaleX: 1, ease: 'none', duration: 0.8 }, cursor)
+            cursor += 0.8
+          }
+        })
+
+        // Completion Hold — ensures all 5 stages & line fills stay 100% complete before next section enters
+        tl.to({}, { duration: 1.5 }, cursor)
+      }
+    }, container)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <section className="relative bg-[#101113] py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <Eyebrow tone="dark">THE TRAIL JOURNEY</Eyebrow>
-        <h2 className="mt-4 max-w-xl font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#F6F5EF] sm:text-[40px]">
-          Every trail moves through the same stages.
-        </h2>
+    <section ref={containerRef} className="relative bg-[#101113] h-[260vh]">
+      <div className="sticky top-0 flex min-h-screen w-full flex-col justify-center overflow-hidden py-24 md:py-32">
+        <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+          <div className="overflow-hidden pb-1">
+            <div ref={eyebrowRef} className="translate-y-[100%]">
+              <Eyebrow tone="dark">THE TRAIL JOURNEY</Eyebrow>
+            </div>
+          </div>
 
-        <ol className="mt-20 flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-          {JOURNEY_STAGES.map((stage, index) => (
-            <li key={stage.label} className="flex items-center gap-5 sm:flex-1 sm:flex-col sm:items-center sm:gap-0 sm:text-center">
-              <div className="flex items-center gap-5 sm:flex-col sm:gap-5">
-                <span
-                  className="h-4 w-4 shrink-0 rounded-full ring-4 ring-[#101113]"
-                  style={{ backgroundColor: stage.dot }}
-                  aria-hidden="true"
-                />
-                <p className="text-[15px] font-semibold text-[#F6F5EF] sm:mt-0">
-                  {stage.label}
-                </p>
-              </div>
+          <h2
+            ref={headingRef}
+            className="mt-5 max-w-2xl font-heading text-[34px] font-semibold leading-[1.12] tracking-tight sm:text-[48px] md:text-[56px]"
+            style={{
+              backgroundImage: 'linear-gradient(to right, #F6F5EF 50%, rgba(246, 245, 239, 0.2) 50%)',
+              backgroundSize: '200% 100%',
+              backgroundPositionX: '100%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            <span className="block overflow-hidden pb-1">
+              <span className="journey-heading-line block translate-y-[100%]">Every trail moves</span>
+            </span>
+            <span className="block overflow-hidden pb-1">
+              <span className="journey-heading-line block translate-y-[100%]">through the same stages.</span>
+            </span>
+          </h2>
 
-              {index < JOURNEY_STAGES.length - 1 && (
-                <span
-                  aria-hidden="true"
-                  className="ml-[7px] h-8 w-px border-l border-dashed border-[#F6F5EF]/20 sm:ml-0 sm:mt-5 sm:h-px sm:w-full sm:border-l-0 sm:border-t"
-                />
-              )}
-            </li>
-          ))}
-        </ol>
+          <div ref={timelineRef} className="mt-20 w-full border-t border-white/10 pt-16">
+            <div className="grid grid-cols-5 gap-3 md:gap-6 items-start">
+              {JOURNEY_STAGES.map((stage, index) => (
+                <div key={stage.label} className="journey-stage flex flex-col">
+                  {/* Dot & Line row */}
+                  <div className="flex items-center w-full">
+                    <div className="relative flex items-center justify-center shrink-0">
+                      <span
+                        className="journey-dot h-3.5 w-3.5 md:h-4 md:w-4 rounded-full border-2 transition-all opacity-30"
+                        style={{
+                          backgroundColor: stage.color,
+                          borderColor: stage.color,
+                        }}
+                        aria-hidden="true"
+                      />
+                    </div>
+                    {index < JOURNEY_STAGES.length - 1 && (
+                      <div className="relative ml-2 mr-2 md:ml-4 md:mr-4 h-[2px] w-full flex-1 bg-white/10 overflow-hidden">
+                        <div
+                          className="journey-line-fill absolute inset-0 origin-left scale-x-0"
+                          style={{ backgroundColor: stage.color }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stage Label & Description */}
+                  <div className="mt-6 flex flex-col pr-1 md:pr-4">
+                    <p className="journey-label text-[16px] sm:text-[19px] md:text-[22px] font-heading font-semibold text-[#52525B] transition-colors">
+                      {stage.label}
+                    </p>
+                    <p className="journey-desc mt-2.5 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-relaxed text-white/60 opacity-0 translate-y-1 transition-colors">
+                      {stage.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -493,7 +650,7 @@ const FEED_POSTS: {
 
 function FeedPost({ post }: { post: (typeof FEED_POSTS)[number] }) {
   return (
-    <div className="border-b border-[#111111]/[0.07] px-7 py-6 last:border-0">
+    <div className="px-7 py-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span
@@ -535,20 +692,215 @@ function FeedPost({ post }: { post: (typeof FEED_POSTS)[number] }) {
 }
 
 export function CommunityPreviewSection() {
-  return (
-    <section className="relative bg-[#F6F5EF] py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <div className="max-w-xl">
-          <Eyebrow>INSIDE THE COMMUNITY</Eyebrow>
-          <h2 className="mt-4 font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[40px]">
-            Real trails, posted as they happen.
-          </h2>
-        </div>
+  const containerRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const eyebrowRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-        <div className="mx-auto mt-14 max-w-xl overflow-hidden rounded-[28px] border border-[#111111]/[0.07] bg-white shadow-[0_30px_70px_-40px_rgba(17,17,17,0.22)]">
-          {FEED_POSTS.map((post) => (
-            <FeedPost key={post.handle} post={post} />
-          ))}
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      })
+
+      // 1. Left Column: Eyebrow & Heading Masked Reveal (in sync with section entrance 0% - 22%)
+      if (eyebrowRef.current) {
+        tl.to(eyebrowRef.current, { y: '0%', ease: 'none', duration: 8 }, 0)
+      }
+
+      const headingLines = headingRef.current?.querySelectorAll('.community-heading-line')
+      if (headingLines) {
+        tl.to(headingLines, { y: '0%', ease: 'none', stagger: 2, duration: 14 }, 2)
+      }
+      tl.to(
+        headingRef.current,
+        {
+          backgroundPositionX: '0%',
+          ease: 'none',
+          duration: 18,
+        },
+        4
+      )
+
+      // 2. Right Column: Exact Scroll Pacing Progression (0% -> 100% Timeline)
+      if (cardRef.current) {
+        const postCards = cardRef.current.querySelectorAll('.community-post-card')
+        const postInners = cardRef.current.querySelectorAll('.community-post-inner')
+
+        const diegoSparksEl = postCards[0]?.querySelector('.post-sparks-num')
+        const diegoCommentsEl = postCards[0]?.querySelector('.post-comments-num')
+        const priyaSparksEl = postCards[1]?.querySelector('.post-sparks-num')
+        const priyaCommentsEl = postCards[1]?.querySelector('.post-comments-num')
+        const jonahSparksEl = postCards[2]?.querySelector('.post-sparks-num')
+        const jonahCommentsEl = postCards[2]?.querySelector('.post-comments-num')
+
+        // ----------------------------------------------------
+        // 1. DIEGO POST: Reveal 0% -> 25%, Settle 25% -> 32%
+        // ----------------------------------------------------
+        tl.to(postInners[0], { y: '0%', ease: 'none', duration: 25 }, 0)
+        tl.to(postCards[0], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 15)
+
+        const diegoCounts = { s: 34, c: 11 }
+        tl.to(
+          diegoCounts,
+          {
+            s: 35,
+            c: 12,
+            ease: 'none',
+            duration: 10,
+            onUpdate: () => {
+              if (diegoSparksEl) diegoSparksEl.textContent = Math.round(diegoCounts.s).toString()
+              if (diegoCommentsEl) diegoCommentsEl.textContent = Math.round(diegoCounts.c).toString()
+            },
+          },
+          15
+        )
+        // Diego Settle Phase: 25% -> 32% (7% timeline hold)
+        tl.to({}, { duration: 7 }, 25)
+
+        // ----------------------------------------------------
+        // 2. PRIYA POST: Reveal 32% -> 57%, Settle 57% -> 64%
+        // ----------------------------------------------------
+        tl.to(postCards[0], { backgroundColor: '#FFFFFF', borderColor: 'rgba(17, 17, 17, 0.07)', ease: 'none', duration: 6 }, 32)
+        tl.to(postInners[1], { y: '0%', ease: 'none', duration: 25 }, 32)
+        tl.to(postCards[1], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 47)
+
+        const priyaCounts = { s: 89, c: 15 }
+        tl.to(
+          priyaCounts,
+          {
+            s: 90,
+            c: 16,
+            ease: 'none',
+            duration: 10,
+            onUpdate: () => {
+              if (priyaSparksEl) priyaSparksEl.textContent = Math.round(priyaCounts.s).toString()
+              if (priyaCommentsEl) priyaCommentsEl.textContent = Math.round(priyaCounts.c).toString()
+            },
+          },
+          47
+        )
+        // Priya Settle Phase: 57% -> 64% (7% timeline hold)
+        tl.to({}, { duration: 7 }, 57)
+
+        // ----------------------------------------------------
+        // 3. JONAH POST: Reveal 64% -> 89%, Settle 89% -> 94%
+        // ----------------------------------------------------
+        tl.to(postCards[1], { backgroundColor: '#FFFFFF', borderColor: 'rgba(17, 17, 17, 0.07)', ease: 'none', duration: 6 }, 64)
+        tl.to(postInners[2], { y: '0%', ease: 'none', duration: 25 }, 64)
+        tl.to(postCards[2], { backgroundColor: '#F9F9F8', borderColor: 'rgba(120, 87, 255, 0.25)', ease: 'none', duration: 10 }, 79)
+
+        const jonahCounts = { s: 214, c: 27 }
+        tl.to(
+          jonahCounts,
+          {
+            s: 215,
+            c: 28,
+            ease: 'none',
+            duration: 10,
+            onUpdate: () => {
+              if (jonahSparksEl) jonahSparksEl.textContent = Math.round(jonahCounts.s).toString()
+              if (jonahCommentsEl) jonahCommentsEl.textContent = Math.round(jonahCounts.c).toString()
+            },
+          },
+          79
+        )
+        // Jonah Settle Phase: 89% -> 94% (5% timeline hold)
+        tl.to({}, { duration: 5 }, 89)
+
+        // ----------------------------------------------------
+        // 4. FINAL HOLD: 94% -> 100%
+        // ----------------------------------------------------
+        tl.to({}, { duration: 6 }, 94)
+      }
+    }, container)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={containerRef} className="relative bg-[#F6F5EF] h-[220vh]">
+      <div className="sticky top-0 flex min-h-[100svh] w-full flex-col justify-center overflow-hidden py-12 md:py-16">
+        <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:items-center">
+            {/* ---- LEFT COLUMN: Eyebrow + Heading ---- */}
+            <div className="flex flex-col items-start max-w-xl">
+              <div className="overflow-hidden pb-1">
+                <div ref={eyebrowRef} className="translate-y-[100%]">
+                  <Eyebrow>INSIDE THE COMMUNITY</Eyebrow>
+                </div>
+              </div>
+              <h2
+                ref={headingRef}
+                className="mt-4 font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] sm:text-[42px] md:text-[48px]"
+                style={{
+                  backgroundImage: 'linear-gradient(to right, #111111 50%, rgba(17, 17, 17, 0.15) 50%)',
+                  backgroundSize: '200% 100%',
+                  backgroundPositionX: '100%',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: 'transparent',
+                }}
+              >
+                <span className="block overflow-hidden pb-1">
+                  <span className="community-heading-line block translate-y-[100%]">Real trails,</span>
+                </span>
+                <span className="block overflow-hidden pb-1">
+                  <span className="community-heading-line block translate-y-[100%]">posted as they happen.</span>
+                </span>
+              </h2>
+            </div>
+
+            {/* ---- RIGHT COLUMN: Community Feed Card ---- */}
+            <div className="w-full flex justify-center lg:justify-end">
+              <div
+                ref={cardRef}
+                className="w-full max-w-lg overflow-hidden rounded-[28px] border border-[#111111]/[0.07] bg-white shadow-[0_30px_70px_-40px_rgba(17,17,17,0.22)]"
+              >
+                {/* Live activity indicator header */}
+                <div className="flex items-center justify-between border-b border-[#111111]/[0.07] px-7 py-3.5 bg-[#FAFAFA]">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#10B981] opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]" />
+                    </span>
+                    <span className="font-heading text-[10.5px] font-bold tracking-[0.12em] uppercase text-[#737373]">
+                      Live Feed Activity
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-medium text-[#8A8A8A]">
+                    Real-time updates
+                  </span>
+                </div>
+
+                <div>
+                  {FEED_POSTS.map((post) => (
+                    <div
+                      key={post.handle}
+                      className="community-post-card overflow-hidden border-b border-[#111111]/[0.07] last:border-0 transition-colors duration-300 bg-white"
+                    >
+                      <div className="community-post-inner translate-y-[100%]">
+                        <FeedPost post={post} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -556,34 +908,114 @@ export function CommunityPreviewSection() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* 5. Final CTA — minimal and premium, no decorative dividers             */
+/* 5. Final CTA — calm, cinematic ending with scroll-driven reveals     */
 /* ---------------------------------------------------------------------- */
 
 export function FinalCtaSection() {
-  return (
-    <section id="start" className="relative bg-[#101113] py-24 text-center md:py-32">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <h2 className="font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#F6F5EF] sm:text-[44px]">
-          Your trail starts with one small step.
-        </h2>
-        <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-[#F6F5EF]/60">
-          No polish required. Just the next thing you&apos;re working on.
-        </p>
+  const containerRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const headingInnerRef = useRef<HTMLSpanElement>(null)
+  const supportingInnerRef = useRef<HTMLParagraphElement>(null)
+  const ctaButtonsRef = useRef<HTMLDivElement>(null)
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href="#"
-            className="inline-flex items-center rounded-full bg-[#C7FF3D] px-6 py-3.5 text-[14px] font-semibold text-[#111111] transition-colors hover:bg-[#C7FF3D]/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F6F5EF]"
-          >
-            Start your trail
-          </Link>
-          <Link
-            href="#"
-            className="inline-flex items-center gap-1.5 rounded-full px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF]/80 transition-colors hover:text-[#F6F5EF] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F6F5EF]"
-          >
-            Explore community
-            <span aria-hidden="true">&rarr;</span>
-          </Link>
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      })
+
+      // 1. Heading Masked Bottom-to-Top Reveal (0% -> 40%)
+      if (headingInnerRef.current) {
+        tl.to(headingInnerRef.current, { y: '0%', ease: 'none', duration: 40 }, 0)
+      }
+
+      // 2. Heading Grey -> White Color Fill (30% -> 60%)
+      if (headingRef.current) {
+        tl.to(headingRef.current, { backgroundPositionX: '0%', ease: 'none', duration: 30 }, 30)
+      }
+
+      // 3. Supporting Text Masked Bottom-to-Top Reveal (50% -> 75%)
+      if (supportingInnerRef.current) {
+        tl.to(supportingInnerRef.current, { y: '0%', opacity: 1, ease: 'none', duration: 25 }, 50)
+      }
+
+      // 4. CTA Buttons Subtle Reveal (y: 16px -> 0, opacity: 0 -> 1) (70% -> 90%)
+      if (ctaButtonsRef.current) {
+        const buttons = ctaButtonsRef.current.children
+        tl.to(buttons, { y: 0, opacity: 1, ease: 'none', stagger: 4, duration: 16 }, 70)
+      }
+
+      // 5. Final Calm Hold (90% -> 100%)
+      tl.to({}, { duration: 10 }, 90)
+    }, container)
+
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <section ref={containerRef} id="start" className="relative bg-[#101113] h-[160vh] text-center">
+      <div className="sticky top-0 flex min-h-[100svh] w-full flex-col items-center justify-center px-6 md:px-10 py-16">
+        <div className="mx-auto w-full max-w-3xl">
+          {/* Main Heading with Mask & Color Fill */}
+          <div className="overflow-hidden pb-1">
+            <h2
+              ref={headingRef}
+              className="font-heading text-[34px] font-semibold leading-tight tracking-tight sm:text-[46px] md:text-[52px]"
+              style={{
+                backgroundImage: 'linear-gradient(to right, #FFFFFF 50%, rgba(246, 245, 239, 0.3) 50%)',
+                backgroundSize: '200% 100%',
+                backgroundPositionX: '100%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              <span ref={headingInnerRef} className="block translate-y-[100%]">
+                Your trail starts with one small step.
+              </span>
+            </h2>
+          </div>
+
+          {/* Supporting Text */}
+          <div className="mt-5 overflow-hidden py-1">
+            <p
+              ref={supportingInnerRef}
+              className="mx-auto max-w-md translate-y-[100%] opacity-0 text-[16px] leading-relaxed text-[#F6F5EF]/60 sm:text-[18px]"
+            >
+              No polish required. Just the next thing you&apos;re working on.
+            </p>
+          </div>
+
+          {/* CTA Buttons */}
+          <div ref={ctaButtonsRef} className="mt-9 flex flex-wrap items-center justify-center gap-4">
+            <MagneticButton
+              href="#"
+              data-magnetic
+              className="translate-y-4 opacity-0 inline-flex items-center rounded-full bg-[#C7FF3D] px-6 py-3.5 text-[14px] font-semibold text-[#111111] transition-colors hover:bg-[#C7FF3D]/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F6F5EF]"
+            >
+              Start your trail
+            </MagneticButton>
+            <Link
+              href="#"
+              className="group translate-y-4 opacity-0 inline-flex items-center gap-1.5 rounded-full px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF]/80 transition-colors hover:text-[#F6F5EF] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F6F5EF]"
+            >
+              Explore community
+              <span aria-hidden="true" className="transition-transform duration-300 ease-out group-hover:translate-x-1">&rarr;</span>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

@@ -9,6 +9,8 @@ import {
 import { Navbar } from '@/components/sparktrail/navbar'
 import { NextSectionTeaser } from '@/components/sparktrail/next-section-teaser'
 
+import { BackToTop } from '@/components/sparktrail/back-to-top'
+
 export default function Page() {
   return (
     <main className="bg-[#F6F5EF]">
@@ -20,6 +22,7 @@ export default function Page() {
       <TrailJourneySection />
       <CommunityPreviewSection />
       <FinalCtaSection />
+      <BackToTop />
     </main>
   )
 }

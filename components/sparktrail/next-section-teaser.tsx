@@ -31,7 +31,7 @@ export function NextSectionTeaser() {
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=120%', // Tighter, less runway
+          end: '+=150%', // Generous runway for full drawing + completion hold
           pin: stickyRef.current,
           pinSpacing: true,
           scrub: 1,
@@ -93,12 +93,15 @@ export function NextSectionTeaser() {
         )
       }
       
-      // 5. Subtle content push (happens across the whole timeline)
+      // 5. Subtle content push (happens across the main reveal timeline)
       tl.to(contentRef.current, {
         y: -20,
         ease: 'none',
-        duration: tl.duration() || 3
+        duration: 2.4
       }, 0)
+
+      // 6. Completion Hold — ensures trail & Node 3 hold stably complete before section unpins
+      tl.to({}, { duration: 0.8 }, 'trailStart+=2.4')
 
     }, container)
 

@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { MagneticButton } from '@/components/animations/magnetic-button'
 import { HeroVisual } from './hero-visual'
 import { ScrollIndicator } from './scroll-indicator'
 
@@ -75,13 +76,13 @@ export function Hero() {
                 transition={{ duration: 0.9, ease: EASE_OUT_EXPO, delay: 0.5 }}
                 className="flex flex-wrap items-center gap-4"
               >
-                <Link
+                <MagneticButton
                   href="#"
                   data-magnetic
                   className="inline-flex items-center rounded-full bg-[#111111] px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF] transition-colors hover:bg-[#111111]/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111111]"
                 >
                   Start your trail
-                </Link>
+                </MagneticButton>
                 <Link
                   href="#"
                   className="group inline-flex items-center gap-1.5 rounded-full px-6 py-3.5 text-[14px] font-semibold text-[#111111] transition-colors hover:text-[#111111]/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#111111]"

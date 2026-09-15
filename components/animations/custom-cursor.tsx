@@ -96,10 +96,69 @@ export function CustomCursor() {
     let isLabel = false
     let activeMagnetic: HTMLElement | null = null
 
+    // ---- Background adaptation helper ----
+    let isOverDark = false
+    let lastX = 0
+    let lastY = 0
+
+    const isDarkAtPoint = (x: number, y: number): boolean => {
+      if (typeof window === 'undefined') return false
+      let el = document.elementFromPoint(x, y)
+      while (el && el !== document.body && el !== document.documentElement) {
+        if (el instanceof HTMLElement) {
+          const cls = el.className || ''
+          if (
+            typeof cls === 'string' &&
+            (cls.includes('bg-[#101113]') ||
+              cls.includes('bg-[#111111]') ||
+              cls.includes('bg-black') ||
+              cls.includes('bg-neutral-900') ||
+              cls.includes('bg-zinc-900'))
+          ) {
+            return true
+          }
+          const bg = window.getComputedStyle(el).backgroundColor
+          if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
+            const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+            if (match) {
+              const alpha = match[4] !== undefined ? parseFloat(match[4]) : 1
+              if (alpha > 0.1) {
+                const r = parseInt(match[1], 10)
+                const g = parseInt(match[2], 10)
+                const b = parseInt(match[3], 10)
+                const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+                return luminance < 128
+              }
+            }
+          }
+        }
+        el = el.parentElement
+      }
+      return false
+    }
+
+    const checkBackground = (x: number, y: number) => {
+      const isDark = isDarkAtPoint(x, y)
+      if (isDark !== isOverDark) {
+        isOverDark = isDark
+        if (!isHovering && !isLabel) {
+          gsap.to(cursor, {
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(17, 17, 17, 1)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 1)' : 'rgba(17, 17, 17, 1)',
+            duration: 0.3,
+            ease: 'power2.out',
+          })
+        }
+      }
+    }
+
     // ---- Mouse move handler ----
     const onMouseMove = (e: MouseEvent) => {
+      lastX = e.clientX
+      lastY = e.clientY
       xTo(e.clientX)
       yTo(e.clientY)
+      checkBackground(e.clientX, e.clientY)
 
       // Magnetic pull
       if (activeMagnetic) {
@@ -117,6 +176,12 @@ export function CustomCursor() {
       }
     }
 
+    const onScroll = () => {
+      if (lastX !== 0 || lastY !== 0) {
+        checkBackground(lastX, lastY)
+      }
+    }
+
     // ---- Transitions to default state ----
     const toDefault = () => {
       isHovering = false
@@ -124,8 +189,8 @@ export function CustomCursor() {
       gsap.to(cursor, {
         width: DOT_SIZE,
         height: DOT_SIZE,
-        backgroundColor: 'rgba(17, 17, 17, 1)', // Solid black/dark grey dot
-        borderColor: 'rgba(17, 17, 17, 1)',
+        backgroundColor: isOverDark ? 'rgba(255, 255, 255, 1)' : 'rgba(17, 17, 17, 1)',
+        borderColor: isOverDark ? 'rgba(255, 255, 255, 1)' : 'rgba(17, 17, 17, 1)',
         duration: 0.3,
         ease: 'power3.out',
       })
@@ -248,6 +313,7 @@ export function CustomCursor() {
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('pointerover', onPointerOver)
     document.addEventListener('pointerout', onPointerOut)
+    window.addEventListener('scroll', onScroll, { passive: true })
     document.documentElement.addEventListener('mouseleave', onMouseLeave)
     document.documentElement.addEventListener('mouseenter', onMouseEnter)
 
@@ -256,6 +322,7 @@ export function CustomCursor() {
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('pointerover', onPointerOver)
       document.removeEventListener('pointerout', onPointerOut)
+      window.removeEventListener('scroll', onScroll)
       document.documentElement.removeEventListener('mouseleave', onMouseLeave)
       document.documentElement.removeEventListener('mouseenter', onMouseEnter)
       if (activeMagnetic) {
