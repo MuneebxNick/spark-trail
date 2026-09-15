@@ -1001,7 +1001,7 @@ export function FinalCtaSection() {
           {/* CTA Buttons */}
           <div ref={ctaButtonsRef} className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <MagneticButton
-              href="#"
+              href="/register"
               data-magnetic
               className="translate-y-4 opacity-0 inline-flex items-center rounded-full bg-[#C7FF3D] px-6 py-3.5 text-[14px] font-semibold text-[#111111] transition-colors hover:bg-[#C7FF3D]/85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F6F5EF]"
             >

@@ -77,7 +77,7 @@ export function Hero() {
                 className="flex flex-wrap items-center gap-4"
               >
                 <MagneticButton
-                  href="#"
+                  href="/register"
                   data-magnetic
                   className="inline-flex items-center rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF] dark:text-[#111111] transition-colors hover:bg-[#111111]/85 dark:hover:bg-[#FFFFFF]/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7857FF]"
                 >

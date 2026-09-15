@@ -1,0 +1,106 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProgressStatus {
+  LEARNING
+  BUILDING
+  STUCK
+  WIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  name         String
+  passwordHash String
+  avatarUrl    String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  trails    Trail[]
+  comments  Comment[]
+  sparks    Spark[]
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+}
+
+model Follows {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+}
+
+model Trail {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  category    String?
+  status      ProgressStatus @default(BUILDING)
+  isPublic    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  entries  TrailEntry[]
+  sparks   Spark[]
+  comments Comment[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TrailEntry {
+  id        String         @id @default(cuid())
+  content   String
+  statusTag ProgressStatus
+  mediaUrl  String?
+  createdAt DateTime       @default(now())
+
+  trailId String
+  trail   Trail  @relation(fields: [trailId], references: [id], onDelete: Cascade)
+
+  @@index([trailId])
+}
+
+model Spark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trailId String?
+  trail   Trail?  @relation(fields: [trailId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trailId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trailId String
+  trail   Trail  @relation(fields: [trailId], references: [id], onDelete: Cascade)
+
+  @@index([trailId])
+}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { SparkMark } from './spark-mark'
 import { ThemeToggle } from './theme-toggle'
+import { TransitionLink } from '@/components/animations/route-transition'
 
 const NAV_LINKS = [
   { name: 'Explore', href: '#' },
@@ -66,18 +67,18 @@ export function Navbar() {
 
         <div className="flex items-center gap-3 sm:gap-5">
           <ThemeToggle />
-          <Link
-            href="#"
+          <TransitionLink
+            href="/login"
             className="hidden text-[13.5px] font-medium text-[#111111]/65 dark:text-[#F6F5EF]/65 transition-colors duration-200 hover:text-[#111111] dark:hover:text-[#F6F5EF] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7857FF] sm:inline"
           >
             Log in
-          </Link>
-          <Link
-            href="#"
+          </TransitionLink>
+          <TransitionLink
+            href="/register"
             className="inline-flex items-center rounded-full bg-[#111111] dark:bg-[#F6F5EF] px-4 sm:px-5 py-2 sm:py-2.5 text-[12.5px] sm:text-[13px] font-semibold text-[#F6F5EF] dark:text-[#111111] shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)] transition-all duration-200 hover:bg-[#111111]/88 dark:hover:bg-[#F6F5EF]/88 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7857FF]"
           >
             Start your trail
-          </Link>
+          </TransitionLink>
         </div>
       </nav>
     </motion.header>

@@ -6,6 +6,7 @@ import './globals.css'
 import { SmoothScroll } from '@/components/animations/smooth-scroll'
 import { CustomCursor } from '@/components/animations/custom-cursor'
 import { ThemeProvider } from '@/lib/theme-provider'
+import { RouteTransitionProvider } from '@/components/animations/route-transition'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -56,16 +57,20 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="antialiased font-sans">
         <ThemeProvider>
-          <SmoothScroll>
-            {children}
-          </SmoothScroll>
-          <CustomCursor />
+          <RouteTransitionProvider>
+            <SmoothScroll>{children}</SmoothScroll>
+            <CustomCursor />
+          </RouteTransitionProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -1,14 +1,14 @@
 'use client'
 
-import { useRef, useEffect, ReactNode } from 'react'
-import Link from 'next/link'
+import { useRef, useEffect, ReactNode, MouseEvent } from 'react'
+import { useRouteTransition } from '@/components/animations/route-transition'
 import gsap from 'gsap'
 
 interface MagneticButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children: ReactNode
   href?: string
   className?: string
-  onClick?: () => void
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void
 }
 
 export function MagneticButton({
@@ -20,6 +20,7 @@ export function MagneticButton({
 }: MagneticButtonProps) {
   const outerRef = useRef<HTMLAnchorElement>(null)
   const innerRef = useRef<HTMLSpanElement>(null)
+  const { transitionTo } = useRouteTransition()
 
   useEffect(() => {
     const outerEl = outerRef.current
@@ -30,7 +31,7 @@ export function MagneticButton({
 
     let isNear = false
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseMove = (e: globalThis.MouseEvent) => {
       const rect = outerEl.getBoundingClientRect()
       if (rect.width === 0 || rect.height === 0) return
 
@@ -91,11 +92,23 @@ export function MagneticButton({
     }
   }, [])
 
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) onClick(e)
+
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+
+    if (!href || href === '#') return
+
+    e.preventDefault()
+    transitionTo(href)
+  }
+
   return (
-    <Link ref={outerRef} href={href} className={className} onClick={onClick} {...props}>
+    <a ref={outerRef} href={href} className={className} onClick={handleClick} {...props}>
       <span ref={innerRef} className="inline-flex items-center justify-center">
         {children}
       </span>
-    </Link>
+    </a>
   )
 }
+
