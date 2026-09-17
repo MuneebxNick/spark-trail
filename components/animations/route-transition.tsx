@@ -121,14 +121,14 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
 
       setIsTransitioning(true)
 
-      // Phase 1: Exit curtain sweep UP from bottom to cover viewport (720ms), then push route
+      // Phase 1: Exit curtain sweep UP from bottom to cover viewport (850ms), then push route
       setTimeout(() => {
         router.push(href)
-        // Phase 2: Hold & Reveal destination route by sweeping curtain UP (720ms)
+        // Phase 2: Hold 150ms at full cover, then trigger curtain exit UP (total 1000ms)
         setTimeout(() => {
           setIsTransitioning(false)
-        }, 720)
-      }, 720)
+        }, 150)
+      }, 850)
     },
     [pathname, router]
   )
@@ -237,7 +237,7 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
             initial={{ y: '100%' }}
             animate={{ y: '0%' }}
             exit={{ y: '-100%' }}
-            transition={{ duration: 0.95, ease: EASE_CINEMATIC }}
+            transition={{ duration: 0.85, ease: EASE_CINEMATIC }}
             aria-hidden="true"
             className="pointer-events-none fixed inset-0 z-[99998] flex flex-col justify-between bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-200 transform-gpu will-change-transform"
           >

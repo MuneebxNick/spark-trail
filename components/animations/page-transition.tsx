@@ -63,7 +63,7 @@ export function StaggerContainer({
       key={pathname}
       variants={containerVariants}
       initial="hidden"
-      animate={isTransitioning ? 'hidden' : 'visible'}
+      animate="visible"
       className={className}
     >
       {children}
