@@ -4,9 +4,13 @@ import { db } from '@/lib/db'
 import { verifySession } from '@/lib/auth/session'
 import {
   createTrailSchema,
+  updateTrailSchema,
   addTrailEntrySchema,
+  updateTrailEntrySchema,
   type CreateTrailInput,
+  type UpdateTrailInput,
   type AddTrailEntryInput,
+  type UpdateTrailEntryInput,
   type progressStatusEnum,
 } from '@/lib/validations/trail'
 import { revalidatePath } from 'next/cache'
@@ -62,6 +66,75 @@ export async function createTrail(data: CreateTrailInput): Promise<TrailActionRe
     return {
       success: false,
       error: 'Failed to create trail. Please check your database connection.',
+    }
+  }
+}
+
+/**
+ * Server Action: Updates an existing Trail.
+ */
+export async function updateTrail(data: UpdateTrailInput): Promise<TrailActionResult> {
+  const session = await verifySession()
+  if (!session) {
+    return { success: false, error: 'You must be logged in to update a trail.' }
+  }
+
+  const payload = {
+    ...data,
+    isPublic:
+      typeof (data as any).isPublic === 'string'
+        ? (data as any).isPublic === 'true'
+        : Boolean(data.isPublic),
+  }
+
+  const validated = updateTrailSchema.safeParse(payload)
+  if (!validated.success) {
+    return {
+      success: false,
+      error: 'Invalid form inputs.',
+      fieldErrors: validated.error.flatten().fieldErrors,
+    }
+  }
+
+  const { id, title, description, category, status, isPublic } = validated.data
+
+  try {
+    const existing = await db.trail.findUnique({
+      where: { id },
+      select: { userId: true }
+    })
+
+    if (!existing) {
+      return { success: false, error: 'Trail not found.' }
+    }
+
+    if (existing.userId !== session.userId) {
+      return { success: false, error: 'Unauthorized: You can only edit your own trails.' }
+    }
+
+    await db.trail.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        description: description?.trim() || null,
+        category: category?.trim() || null,
+        status,
+        isPublic,
+        updatedAt: new Date(),
+      },
+    })
+
+    revalidatePath(`/trails/${id}`)
+    revalidatePath(`/trails/${id}/edit`)
+    revalidatePath('/dashboard')
+    revalidatePath('/explore')
+
+    return { success: true, trailId: id }
+  } catch (err) {
+    console.error('Error updating trail:', err)
+    return {
+      success: false,
+      error: 'Failed to update trail.',
     }
   }
 }
@@ -170,6 +243,141 @@ export async function addTrailEntry(data: AddTrailEntryInput): Promise<TrailActi
       success: false,
       error: 'Failed to post entry. Please try again.',
     }
+  }
+}
+
+/**
+ * Server Action: Updates a progress entry.
+ */
+export async function updateTrailEntry(data: UpdateTrailEntryInput): Promise<TrailActionResult> {
+  const session = await verifySession()
+  if (!session) {
+    return { success: false, error: 'You must be logged in to update an entry.' }
+  }
+
+  const validated = updateTrailEntrySchema.safeParse(data)
+  if (!validated.success) {
+    return {
+      success: false,
+      error: 'Invalid entry payload.',
+      fieldErrors: validated.error.flatten().fieldErrors,
+    }
+  }
+
+  const { entryId, content, statusTag, mediaUrl, imageData } = validated.data
+
+  try {
+    const entry = await db.trailEntry.findUnique({
+      where: { id: entryId },
+      include: { trail: { select: { userId: true, id: true } } },
+    })
+
+    if (!entry) {
+      return { success: false, error: 'Entry not found.' }
+    }
+
+    if (entry.trail.userId !== session.userId) {
+      return { success: false, error: 'You do not have permission to edit this entry.' }
+    }
+
+    let finalMediaUrl: string | null = entry.mediaUrl
+
+    // 1. If public HTTP/HTTPS URL provided
+    if (mediaUrl && (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://'))) {
+      finalMediaUrl = mediaUrl.trim()
+    } else if (mediaUrl === '') {
+      // Clear image
+      finalMediaUrl = null
+    }
+
+    // 2. If device image uploaded (base64 data URI)
+    const uploadSource = imageData || (mediaUrl && mediaUrl.startsWith('data:image/') ? mediaUrl : null)
+    if (uploadSource) {
+      if (!isCloudinaryConfigured) {
+        return {
+          success: false,
+          error: 'Cloudinary credentials are not configured.',
+        }
+      }
+
+      try {
+        const uploadResult = await uploadTrailImageToCloudinary(uploadSource)
+        finalMediaUrl = uploadResult.url
+      } catch (uploadErr) {
+        console.error('Cloudinary upload error:', uploadErr)
+        return { success: false, error: 'Image upload failed. Please try again.' }
+      }
+    }
+
+    await db.$transaction([
+      db.trailEntry.update({
+        where: { id: entryId },
+        data: {
+          content: content.trim(),
+          statusTag,
+          mediaUrl: finalMediaUrl,
+        },
+      }),
+      db.trail.update({
+        where: { id: entry.trail.id },
+        data: {
+          status: statusTag,
+          updatedAt: new Date(),
+        },
+      }),
+    ])
+
+    revalidatePath(`/trails/${entry.trail.id}`)
+
+    return { success: true }
+  } catch (err) {
+    console.error('Error updating trail entry:', err)
+    return {
+      success: false,
+      error: 'Failed to update entry.',
+    }
+  }
+}
+
+/**
+ * Server Action: Deletes a progress entry.
+ */
+export async function deleteTrailEntry(entryId: string): Promise<TrailActionResult> {
+  const session = await verifySession()
+  if (!session) {
+    return { success: false, error: 'You must be logged in to delete an entry.' }
+  }
+
+  try {
+    const entry = await db.trailEntry.findUnique({
+      where: { id: entryId },
+      include: { trail: { select: { userId: true, id: true } } },
+    })
+
+    if (!entry) {
+      return { success: false, error: 'Entry not found.' }
+    }
+
+    if (entry.trail.userId !== session.userId) {
+      return { success: false, error: 'You do not have permission to delete this entry.' }
+    }
+
+    await db.trailEntry.delete({
+      where: { id: entryId },
+    })
+
+    // Update trail timestamp
+    await db.trail.update({
+      where: { id: entry.trail.id },
+      data: { updatedAt: new Date() },
+    })
+
+    revalidatePath(`/trails/${entry.trail.id}`)
+
+    return { success: true }
+  } catch (err) {
+    console.error('Error deleting trail entry:', err)
+    return { success: false, error: 'Failed to delete entry.' }
   }
 }
 

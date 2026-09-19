@@ -7,6 +7,7 @@ import { SmoothScroll } from '@/components/animations/smooth-scroll'
 import { CustomCursor } from '@/components/animations/custom-cursor'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { RouteTransitionProvider } from '@/components/animations/route-transition'
+import { ToastProvider } from '@/components/sparktrail/toast'
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -67,10 +68,12 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans">
         <ThemeProvider>
-          <RouteTransitionProvider>
-            <SmoothScroll>{children}</SmoothScroll>
-            <CustomCursor />
-          </RouteTransitionProvider>
+          <ToastProvider>
+            <RouteTransitionProvider>
+              <SmoothScroll>{children}</SmoothScroll>
+              <CustomCursor />
+            </RouteTransitionProvider>
+          </ToastProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

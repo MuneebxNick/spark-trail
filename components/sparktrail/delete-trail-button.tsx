@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { deleteTrail } from '@/actions/trails'
 import { useRouteTransition } from '@/components/animations/route-transition'
+import { useToast } from '@/components/sparktrail/toast'
 import { Trash2 } from 'lucide-react'
 
 export function DeleteTrailButton({ trailId }: { trailId: string }) {
   const { transitionTo } = useRouteTransition()
+  const { toast } = useToast()
   const [isConfirming, setIsConfirming] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -15,14 +17,15 @@ export function DeleteTrailButton({ trailId }: { trailId: string }) {
     try {
       const res = await deleteTrail(trailId)
       if (res.success) {
+        toast('Trail deleted successfully.', 'success')
         transitionTo('/trails')
       } else {
-        alert(res.error || 'Failed to delete trail.')
+        toast(res.error || 'Failed to delete trail.', 'error')
         setIsDeleting(false)
         setIsConfirming(false)
       }
     } catch {
-      alert('An unexpected error occurred.')
+      toast('An unexpected error occurred.', 'error')
       setIsDeleting(false)
       setIsConfirming(false)
     }

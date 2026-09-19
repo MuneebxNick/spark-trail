@@ -27,6 +27,7 @@ export async function addComment(trailId: string, content: string) {
           select: {
             name: true,
             username: true,
+            avatarUrl: true,
           },
         },
       },
@@ -42,5 +43,69 @@ export async function addComment(trailId: string, content: string) {
       return { success: false, error: (error as any).errors[0].message }
     }
     return { success: false, error: 'Failed to add comment.' }
+  }
+}
+
+const updateCommentSchema = z.object({
+  commentId: z.string(),
+  content: z.string().min(1, 'Comment cannot be empty').max(1000, 'Comment is too long'),
+})
+
+export async function updateComment(commentId: string, content: string) {
+  const user = await requireAuth()
+
+  try {
+    const validated = updateCommentSchema.parse({ commentId, content })
+
+    const comment = await db.comment.findUnique({
+      where: { id: validated.commentId },
+    })
+
+    if (!comment) {
+      return { success: false, error: 'Comment not found.' }
+    }
+
+    if (comment.userId !== user.id) {
+      return { success: false, error: 'Unauthorized to edit this comment.' }
+    }
+
+    await db.comment.update({
+      where: { id: validated.commentId },
+      data: { content: validated.content },
+    })
+
+    revalidatePath(`/trails/${comment.trailId}`)
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to update comment:', error)
+    return { success: false, error: 'Failed to update comment.' }
+  }
+}
+
+export async function deleteComment(commentId: string) {
+  const user = await requireAuth()
+
+  try {
+    const comment = await db.comment.findUnique({
+      where: { id: commentId },
+    })
+
+    if (!comment) {
+      return { success: false, error: 'Comment not found.' }
+    }
+
+    if (comment.userId !== user.id) {
+      return { success: false, error: 'Unauthorized to delete this comment.' }
+    }
+
+    await db.comment.delete({
+      where: { id: commentId },
+    })
+
+    revalidatePath(`/trails/${comment.trailId}`)
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to delete comment:', error)
+    return { success: false, error: 'Failed to delete comment.' }
   }
 }

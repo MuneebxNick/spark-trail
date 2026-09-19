@@ -11,7 +11,8 @@ import { DeleteTrailButton } from '@/components/sparktrail/delete-trail-button'
 import { SparkButton } from '@/components/sparktrail/spark-button'
 import { CommentSection } from '@/components/sparktrail/comment-section'
 import { UserAvatar } from '@/components/sparktrail/user-avatar'
-import { ArrowLeft, Sparkles, Lock, Globe, Clock } from 'lucide-react'
+import { TrailEntryItem } from '@/components/sparktrail/trail-entry-item'
+import { ArrowLeft, Sparkles, Lock, Globe, Clock, Edit2 } from 'lucide-react'
 import type { ProgressStatus } from '@prisma/client'
 
 const STATUS_STYLES: Record<ProgressStatus, string> = {
@@ -85,7 +86,7 @@ export default async function TrailDetailPage({
         orderBy: { createdAt: 'asc' },
         include: {
           user: {
-            select: { name: true, username: true },
+            select: { name: true, username: true, avatarUrl: true },
           },
         },
       },
@@ -188,7 +189,19 @@ export default async function TrailDetailPage({
               initialSparked={trail.sparks.length > 0} 
               initialCount={trail._count.sparks} 
             />
-            {isOwner && <DeleteTrailButton trailId={trail.id} />}
+            {isOwner && (
+              <>
+                <TransitionLink
+                  href={`/trails/${trail.id}/edit`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#111111]/10 dark:border-white/10 bg-transparent px-3.5 py-1.5 text-[12.5px] font-medium text-[#111111] dark:text-[#FFFFFF] hover:bg-[#111111]/5 dark:hover:bg-white/5 transition-colors"
+                  aria-label="Edit trail"
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Edit</span>
+                </TransitionLink>
+                <DeleteTrailButton trailId={trail.id} />
+              </>
+            )}
           </div>
         </div>
 
@@ -272,59 +285,16 @@ export default async function TrailDetailPage({
               aria-hidden="true"
             />
 
-            {trail.entries.map((entry) => {
-              const nodeColor = STATUS_NODE_COLORS[entry.statusTag]
-              return (
-                <div key={entry.id} className="relative flex items-start gap-4 sm:gap-6">
-                  {/* Timeline Dot Node */}
-                  <div
-                    className="absolute -left-[23px] sm:-left-[31px] top-6 h-4 w-4 rounded-full border-2 border-white dark:border-[#0D0E10] shadow-sm z-10"
-                    style={{ backgroundColor: nodeColor }}
-                    aria-hidden="true"
-                  />
-
-                  {/* Entry Card */}
-                  <div className="w-full rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-6 shadow-[0_4px_20px_-10px_rgba(17,17,17,0.06)] dark:shadow-[0_4px_20px_-10px_rgba(0,0,0,0.4)] transition-colors space-y-3">
-                    <div className="flex items-center justify-between">
-                      <StatusBadge status={entry.statusTag} />
-                      <span className="text-[12px] font-medium text-[#737373] dark:text-[#A1A1AA]">
-                        {formatDate(entry.createdAt)}
-                      </span>
-                    </div>
-
-                    <p className="text-[15px] leading-relaxed text-[#111111] dark:text-[#F6F5EF] whitespace-pre-wrap">
-                      {entry.content}
-                    </p>
-
-                    {entry.mediaUrl && (
-                      <div className="mt-3 overflow-hidden rounded-xl border border-[#111111]/10 dark:border-white/10 bg-[#111111]/[0.02] dark:bg-white/[0.02]">
-                        <a
-                          href={entry.mediaUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group relative block overflow-hidden"
-                          title="Click to view full image"
-                        >
-                          {/* eslint-disable-next-html-element-suppression */}
-                          <img
-                            src={entry.mediaUrl}
-                            alt="Progress entry attachment"
-                            loading="lazy"
-                            className="max-h-96 w-full object-contain bg-black/5 dark:bg-black/40 transition-transform duration-200 group-hover:scale-[1.01]"
-                          />
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
+            {trail.entries.map((entry) => (
+              <TrailEntryItem key={entry.id} entry={entry} isOwner={isOwner} />
+            ))}
           </div>
         )}
       </StaggerItem>
 
+      {/* Comments Section */}
       <StaggerItem y={20}>
-        <CommentSection trailId={trail.id} comments={trail.comments} />
+        <CommentSection trailId={trail.id} comments={trail.comments} currentUserId={currentUser?.id} />
       </StaggerItem>
     </StaggerContainer>
   )
