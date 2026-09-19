@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useOptimistic, startTransition, useState } from 'react'
 import { toggleSpark } from '@/actions/sparks'
-import { Heart } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface SparkButtonProps {
@@ -53,11 +53,11 @@ export function SparkButton({ trailId, initialSparked, initialCount }: SparkButt
               key="filled"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="absolute inset-0 text-[#7857FF]"
+              exit={{ scale: 0.5, opacity: 0, transition: { duration: 0.15 } }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              className="absolute inset-0 flex items-center justify-center text-[#7857FF]"
             >
-              <Heart className="h-4 w-4 fill-current" />
+              <Zap className="h-4 w-4 fill-current" />
             </motion.div>
           ) : (
             <motion.div
@@ -68,7 +68,7 @@ export function SparkButton({ trailId, initialSparked, initialCount }: SparkButt
               transition={{ duration: 0.15 }}
               className="absolute inset-0"
             >
-              <Heart className="h-4 w-4" />
+              <Zap className="h-4 w-4" />
             </motion.div>
           )}
         </AnimatePresence>

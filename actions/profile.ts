@@ -55,9 +55,9 @@ export async function getUserProfile(username: string) {
 }
 
 export async function toggleFollow(targetUserId: string) {
+  const user = await requireAuth()
+  
   try {
-    const user = await requireAuth()
-
     if (user.id === targetUserId) {
       return { success: false, error: 'You cannot follow yourself' }
     }

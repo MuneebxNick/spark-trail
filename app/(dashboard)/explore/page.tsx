@@ -10,7 +10,7 @@ import {
   Clock,
   Layers,
   Compass,
-  Heart,
+  Zap,
   MessageSquare,
 } from 'lucide-react'
 import { $Enums } from '@prisma/client'
@@ -31,7 +31,7 @@ function formatDate(date: Date) {
 }
 
 export default async function ExplorePage() {
-  await requireAuth()
+  const currentUser = await requireAuth()
 
   const { success, trails = [], error } = await getExploreFeed()
 
@@ -90,10 +90,12 @@ export default async function ExplorePage() {
             const initials = trail.user.name
               ? trail.user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
               : trail.user.username.slice(0, 2).toUpperCase()
+              
+            const isOwnTrail = currentUser.id === trail.user.id
 
             return (
               <StaggerItem key={trail.id} className="relative group flex flex-col justify-between h-full rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-6 hover:border-[#7857FF]/50 transition-all duration-200 shadow-sm hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.4)]">
-                <TransitionLink href={`/trails/${trail.id}`} className="absolute inset-0 z-0 rounded-2xl" aria-label={`View trail ${trail.title}`}>
+                <TransitionLink href={`/trails/${trail.id}?from=explore`} className="absolute inset-0 z-0 rounded-2xl" aria-label={`View trail ${trail.title}`}>
                   <span className="sr-only">View {trail.title}</span>
                 </TransitionLink>
                 
@@ -105,9 +107,16 @@ export default async function ExplorePage() {
                         {initials}
                       </span>
                       <div className="flex flex-col">
-                        <span className="text-[12.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] leading-tight group-hover/author:text-[#7857FF] transition-colors">
-                          {trail.user.name}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[12.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] leading-tight group-hover/author:text-[#7857FF] transition-colors">
+                            {trail.user.name}
+                          </span>
+                          {isOwnTrail && (
+                            <span className="rounded bg-[#7857FF]/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#7857FF]">
+                              You
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[10.5px] text-[#737373] dark:text-[#A1A1AA] leading-tight">
                           @{trail.user.username}
                         </span>
@@ -145,7 +154,7 @@ export default async function ExplorePage() {
                 <div className="pt-4 mt-6 border-t border-[#111111]/[0.06] dark:border-white/5 flex items-center justify-between text-[11.5px] text-[#737373] dark:text-[#A1A1AA] relative z-10 pointer-events-none">
                   <div className="flex items-center gap-3.5">
                     <span className="inline-flex items-center gap-1">
-                      <Heart className="h-3.5 w-3.5" />
+                      <Zap className="h-3.5 w-3.5" />
                       <span>{sparkCount}</span>
                     </span>
                     <span className="inline-flex items-center gap-1">

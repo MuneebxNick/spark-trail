@@ -5,9 +5,9 @@ import { requireAuth } from '@/lib/auth/session'
 import { revalidatePath } from 'next/cache'
 
 export async function toggleSpark(trailId: string) {
+  const user = await requireAuth()
+  
   try {
-    const user = await requireAuth()
-
     const existingSpark = await db.spark.findUnique({
       where: {
         userId_trailId: {

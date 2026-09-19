@@ -11,9 +11,9 @@ const commentSchema = z.object({
 })
 
 export async function addComment(trailId: string, content: string) {
+  const user = await requireAuth()
+  
   try {
-    const user = await requireAuth()
-
     const validated = commentSchema.parse({ trailId, content })
 
     const comment = await db.comment.create({

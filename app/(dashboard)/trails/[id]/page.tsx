@@ -49,10 +49,15 @@ function formatDate(date: Date) {
 
 export default async function TrailDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { id } = await params
+  const resolvedSearchParams = await searchParams
+  const from = resolvedSearchParams.from as string | undefined
+  const fromUsername = resolvedSearchParams.username as string | undefined
   const currentUser = await getCurrentUser()
 
   const trail = await db.trail.findUnique({
@@ -104,10 +109,10 @@ export default async function TrailDetailPage({
         </p>
         <div className="pt-4">
           <TransitionLink
-            href="/trails"
+            href={from === 'explore' ? '/explore' : (from === 'profile' && fromUsername ? `/profile/${fromUsername}` : '/trails')}
             className="inline-flex items-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-6 py-2.5 text-[13.5px] font-semibold text-[#F6F5EF] dark:text-[#111111]"
           >
-            Return to Studio
+            Return
           </TransitionLink>
         </div>
       </div>
@@ -123,16 +128,30 @@ export default async function TrailDetailPage({
       .slice(0, 2)
     : trail.user.username.slice(0, 2).toUpperCase()
 
+  let backHref = isOwner ? '/trails' : '/explore'
+  let backLabel = isOwner ? 'Back to studio' : 'Back to explore'
+
+  if (from === 'explore') {
+    backHref = '/explore'
+    backLabel = 'Back to explore'
+  } else if (from === 'trails') {
+    backHref = '/trails'
+    backLabel = 'Back to studio'
+  } else if (from === 'profile' && fromUsername) {
+    backHref = `/profile/${fromUsername}`
+    backLabel = 'Back to profile'
+  }
+
   return (
     <StaggerContainer className="mx-auto max-w-4xl space-y-10">
       {/* Back Link */}
       <StaggerItem y={10}>
         <TransitionLink
-          href="/trails"
+          href={backHref}
           className="group inline-flex items-center gap-2 text-[13px] font-medium text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors"
         >
           <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
-          <span>Back to studio</span>
+          <span>{backLabel}</span>
         </TransitionLink>
       </StaggerItem>
 

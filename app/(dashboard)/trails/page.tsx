@@ -124,7 +124,7 @@ export default async function MyTrailsPage() {
             return (
               <StaggerItem key={trail.id}>
                 <TransitionLink
-                  href={`/trails/${trail.id}`}
+                  href={`/trails/${trail.id}?from=trails`}
                   className="group flex flex-col justify-between h-full rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-6 sm:p-7 hover:border-[#7857FF]/50 transition-all duration-200 shadow-sm hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.4)]"
                 >
                   <div className="space-y-4">

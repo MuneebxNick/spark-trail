@@ -75,6 +75,7 @@ describe('TrailDetailPage Navigation', () => {
 
     const jsx = await TrailDetailPage({
       params: Promise.resolve({ id: 'trail_123' }),
+      searchParams: Promise.resolve({}),
     })
     render(jsx)
 
@@ -111,6 +112,7 @@ describe('TrailDetailPage Navigation', () => {
 
     const jsx = await TrailDetailPage({
       params: Promise.resolve({ id: 'trail_private' }),
+      searchParams: Promise.resolve({}),
     })
     render(jsx)
 
