@@ -7,6 +7,7 @@ import {
 } from '@/components/animations/page-transition'
 import { TransitionLink } from '@/components/animations/route-transition'
 import { FollowButton } from '@/components/sparktrail/follow-button'
+import { UserAvatar } from '@/components/sparktrail/user-avatar'
 import { ArrowRight, Layers, Compass, Zap, MessageSquare } from 'lucide-react'
 import { $Enums } from '@prisma/client'
 
@@ -42,9 +43,7 @@ export default async function ProfilePage({
       {/* Profile Header */}
       <StaggerItem className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between border-b border-[#111111]/[0.08] dark:border-white/10 pb-10">
         <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[32px] font-bold text-white uppercase shadow-lg">
-            {initials}
-          </div>
+          <UserAvatar avatarUrl={profile.avatarUrl} name={profile.name} username={profile.username} size="xl" className="shadow-lg" />
           <div className="space-y-3">
             <div>
               <h1 className="font-heading text-[32px] font-semibold text-[#111111] dark:text-[#FFFFFF] leading-none">

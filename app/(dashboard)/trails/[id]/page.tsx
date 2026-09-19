@@ -10,6 +10,7 @@ import { TrailEntryForm } from '@/components/sparktrail/trail-entry-form'
 import { DeleteTrailButton } from '@/components/sparktrail/delete-trail-button'
 import { SparkButton } from '@/components/sparktrail/spark-button'
 import { CommentSection } from '@/components/sparktrail/comment-section'
+import { UserAvatar } from '@/components/sparktrail/user-avatar'
 import { ArrowLeft, Sparkles, Lock, Globe, Clock } from 'lucide-react'
 import type { ProgressStatus } from '@prisma/client'
 
@@ -206,9 +207,7 @@ export default async function TrailDetailPage({
         {/* Creator Info Footer */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-[#111111]/[0.08] dark:border-white/10">
           <TransitionLink href={`/profile/${trail.user.username}`} className="flex items-center gap-3 group/author hover:opacity-80 transition-opacity">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-bold text-white uppercase group-hover/author:shadow-md transition-shadow">
-              {userInitials}
-            </span>
+            <UserAvatar avatarUrl={trail.user.avatarUrl} name={trail.user.name} username={trail.user.username} size="md" className="group-hover/author:shadow-md transition-shadow" />
             <div>
               <p className="text-[13.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] group-hover/author:text-[#7857FF] transition-colors">
                 {trail.user.name}

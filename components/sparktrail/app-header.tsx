@@ -4,12 +4,13 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { SparkMark } from './spark-mark'
 import { ThemeToggle } from './theme-toggle'
+import { UserAvatar } from './user-avatar'
 import { logoutUser } from '@/actions/auth'
 import {
   TransitionLink,
   useRouteTransition,
 } from '@/components/animations/route-transition'
-import { LogOut, Menu, X, Plus } from 'lucide-react'
+import { LogOut, Menu, X, Plus, Settings } from 'lucide-react'
 
 interface UserProps {
   id: string
@@ -127,9 +128,7 @@ export function AppHeader({ user }: { user: UserProps }) {
             href={`/profile/${user.username}`}
             className="flex items-center gap-2.5 rounded-full border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] py-1 pl-1 pr-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-[#7857FF]/40 transition-colors"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[11px] font-bold text-white uppercase">
-              {initials}
-            </span>
+            <UserAvatar avatarUrl={user.avatarUrl} name={user.name} username={user.username} size="sm" />
             <div className="flex flex-col text-left">
               <span className="text-[12.5px] font-semibold leading-tight text-[#111111] dark:text-[#FFFFFF]">
                 {user.name}
@@ -138,6 +137,15 @@ export function AppHeader({ user }: { user: UserProps }) {
                 @{user.username}
               </span>
             </div>
+          </TransitionLink>
+
+          {/* Settings Link */}
+          <TransitionLink
+            href="/settings"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] hover:bg-[#111111]/5 dark:hover:bg-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7857FF]"
+            aria-label="Settings"
+          >
+            <Settings className="h-4 w-4" />
           </TransitionLink>
 
           {/* Logout Button */}
@@ -179,9 +187,7 @@ export function AppHeader({ user }: { user: UserProps }) {
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center gap-3 pb-3 border-b border-[#111111]/[0.08] dark:border-white/10 hover:opacity-80 transition-opacity"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-bold text-white uppercase">
-              {initials}
-            </span>
+            <UserAvatar avatarUrl={user.avatarUrl} name={user.name} username={user.username} size="md" />
             <div>
               <p className="text-[13.5px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
                 {user.name}
@@ -217,7 +223,15 @@ export function AppHeader({ user }: { user: UserProps }) {
             })}
           </nav>
 
-          <div className="pt-2 border-t border-[#111111]/[0.08] dark:border-white/10">
+          <div className="pt-2 border-t border-[#111111]/[0.08] dark:border-white/10 space-y-1">
+            <TransitionLink
+              href="/settings"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 text-[13.5px] font-medium text-[#111111] dark:text-[#FFFFFF] py-2"
+            >
+              <Settings className="h-4 w-4 text-[#7857FF]" />
+              <span>Settings</span>
+            </TransitionLink>
             <button
               type="button"
               onClick={handleLogout}

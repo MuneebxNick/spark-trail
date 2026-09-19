@@ -5,6 +5,7 @@ import {
   StaggerItem,
 } from '@/components/animations/page-transition'
 import { TransitionLink } from '@/components/animations/route-transition'
+import { UserAvatar } from '@/components/sparktrail/user-avatar'
 import {
   ArrowRight,
   Clock,
@@ -103,9 +104,7 @@ export default async function ExplorePage() {
                   {/* Author Top Bar */}
                   <div className="flex items-center justify-between gap-2 border-b border-[#111111]/[0.06] dark:border-white/5 pb-4 pointer-events-auto">
                     <TransitionLink href={`/profile/${trail.user.username}`} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group/author">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[10px] font-bold text-white uppercase group-hover/author:shadow-md transition-all">
-                        {initials}
-                      </span>
+                      <UserAvatar avatarUrl={trail.user.avatarUrl} name={trail.user.name} username={trail.user.username} size="sm" className="group-hover/author:shadow-md transition-all" />
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2">
                           <span className="text-[12.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] leading-tight group-hover/author:text-[#7857FF] transition-colors">

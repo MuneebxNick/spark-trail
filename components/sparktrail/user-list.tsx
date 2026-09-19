@@ -1,5 +1,6 @@
 import { TransitionLink } from '@/components/animations/route-transition'
 import { FollowButton } from '@/components/sparktrail/follow-button'
+import { UserAvatar } from '@/components/sparktrail/user-avatar'
 
 interface UserListItem {
   id: string
@@ -31,9 +32,7 @@ export function UserList({ users, currentUserId }: { users: UserListItem[], curr
         return (
           <div key={user.id} className="flex items-center justify-between rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-5 shadow-sm">
             <TransitionLink href={`/profile/${user.username}`} className="flex items-center gap-3 group min-w-0">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[13px] font-bold text-white uppercase group-hover:shadow-md transition-shadow">
-                {initials}
-              </span>
+              <UserAvatar avatarUrl={user.avatarUrl} name={user.name} username={user.username} size="lg" className="group-hover:shadow-md transition-shadow" />
               <div className="flex flex-col min-w-0">
                 <span className="text-[14px] font-semibold text-[#111111] dark:text-[#FFFFFF] group-hover:text-[#7857FF] transition-colors truncate">
                   {user.name}
