@@ -5,7 +5,16 @@ import {
   StaggerItem,
 } from '@/components/animations/page-transition'
 import { TransitionLink } from '@/components/animations/route-transition'
-import { Plus, Compass, Activity, Sparkles, ArrowRight } from 'lucide-react'
+import {
+  Plus,
+  Compass,
+  Activity,
+  Sparkles,
+  ArrowRight,
+  MessageSquare,
+  Users,
+  Globe,
+} from 'lucide-react'
 import { $Enums } from '@prisma/client'
 
 const STATUS_STYLES: Record<$Enums.ProgressStatus, string> = {
@@ -33,11 +42,34 @@ export default async function DashboardPage() {
     },
   })
 
+  // Fetch community pulse metrics concurrently
+  const [totalSparksReceived, totalCommentsReceived, followersCount, publicTrailsCount] =
+    await Promise.all([
+      db.spark.count({
+        where: { trail: { userId: user.id } },
+      }),
+      db.comment.count({
+        where: { trail: { userId: user.id } },
+      }),
+      db.follows.count({
+        where: { followingId: user.id },
+      }),
+      db.trail.count({
+        where: { userId: user.id, isPublic: true },
+      }),
+    ])
+
   const activeTrailsCount = userTrails.length
   const totalEntriesCount = userTrails.reduce(
     (acc, t) => acc + t._count.entries,
     0
   )
+
+  const hasCommunityPulse =
+    totalSparksReceived > 0 ||
+    totalCommentsReceived > 0 ||
+    followersCount > 0 ||
+    publicTrailsCount > 0
 
   return (
     <StaggerContainer className="space-y-12">
@@ -214,23 +246,99 @@ export default async function DashboardPage() {
             <span className="font-heading text-[12px] font-semibold tracking-[0.12em] text-[#737373] dark:text-[#A1A1AA] uppercase">
               03 / Community Pulse
             </span>
-            <Compass className="h-4 w-4 text-[#737373] dark:text-[#A1A1AA]" />
+            <Users className="h-4 w-4 text-[#7857FF]" />
           </div>
 
           <div className="mt-6 flex flex-1 flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
-                Feed updates coming soon
-              </h2>
-              <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
-                Follow other builders and creators to see their real-time progress,
-                learning milestones, and work in public.
-              </p>
-            </div>
+            {!hasCommunityPulse ? (
+              <div className="space-y-3">
+                <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
+                  Pulse is quiet
+                </h2>
+                <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
+                  Publish your trails publicly to start receiving sparks, feedback, and followers from fellow builders.
+                </p>
+                <div className="pt-2">
+                  <TransitionLink
+                    href="/explore"
+                    className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[#7857FF] hover:underline"
+                  >
+                    <span>Explore community trails</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </TransitionLink>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {/* Total Sparks */}
+                <div className="p-3.5 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold tracking-[0.08em] text-[#737373] dark:text-[#A1A1AA] uppercase">
+                      Sparks
+                    </span>
+                    <Sparkles className="h-3.5 w-3.5 text-[#5D7A1D] dark:text-[#C7FF3D]" />
+                  </div>
+                  <p className="font-heading text-[24px] font-bold tracking-tight text-[#111111] dark:text-[#FFFFFF] tabular-nums">
+                    {totalSparksReceived}
+                  </p>
+                  <p className="text-[11px] text-[#737373] dark:text-[#A1A1AA] truncate">
+                    {totalSparksReceived === 0 ? 'None yet' : totalSparksReceived === 1 ? 'Spark received' : 'Sparks received'}
+                  </p>
+                </div>
+
+                {/* Total Comments */}
+                <div className="p-3.5 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold tracking-[0.08em] text-[#737373] dark:text-[#A1A1AA] uppercase">
+                      Comments
+                    </span>
+                    <MessageSquare className="h-3.5 w-3.5 text-[#7857FF]" />
+                  </div>
+                  <p className="font-heading text-[24px] font-bold tracking-tight text-[#111111] dark:text-[#FFFFFF] tabular-nums">
+                    {totalCommentsReceived}
+                  </p>
+                  <p className="text-[11px] text-[#737373] dark:text-[#A1A1AA] truncate">
+                    {totalCommentsReceived === 0 ? 'None yet' : totalCommentsReceived === 1 ? 'Comment' : 'Comments'}
+                  </p>
+                </div>
+
+                {/* Followers */}
+                <div className="p-3.5 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold tracking-[0.08em] text-[#737373] dark:text-[#A1A1AA] uppercase">
+                      Followers
+                    </span>
+                    <Users className="h-3.5 w-3.5 text-[#737373] dark:text-[#A1A1AA]" />
+                  </div>
+                  <p className="font-heading text-[24px] font-bold tracking-tight text-[#111111] dark:text-[#FFFFFF] tabular-nums">
+                    {followersCount}
+                  </p>
+                  <p className="text-[11px] text-[#737373] dark:text-[#A1A1AA] truncate">
+                    {followersCount === 0 ? 'None yet' : followersCount === 1 ? 'Follower' : 'Followers'}
+                  </p>
+                </div>
+
+                {/* Public Trails */}
+                <div className="p-3.5 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold tracking-[0.08em] text-[#737373] dark:text-[#A1A1AA] uppercase">
+                      Public
+                    </span>
+                    <Globe className="h-3.5 w-3.5 text-[#737373] dark:text-[#A1A1AA]" />
+                  </div>
+                  <p className="font-heading text-[24px] font-bold tracking-tight text-[#111111] dark:text-[#FFFFFF] tabular-nums">
+                    {publicTrailsCount}
+                  </p>
+                  <p className="text-[11px] text-[#737373] dark:text-[#A1A1AA] truncate">
+                    {publicTrailsCount === 1 ? 'Public trail' : 'Public trails'}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 text-[12.5px] text-[#737373] dark:text-[#71717A]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7857FF]" />
-              <span>Community network active</span>
+              <span className={`h-1.5 w-1.5 rounded-full ${hasCommunityPulse ? 'bg-[#7857FF]' : 'bg-[#737373]'}`} />
+              <span>{hasCommunityPulse ? 'Community network active' : 'Ready to share with builders'}</span>
             </div>
           </div>
         </StaggerItem>
