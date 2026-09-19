@@ -19,9 +19,9 @@ interface UserProps {
   avatarUrl?: string | null
 }
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { name: string; href: string; badge?: string }[] = [
   { name: 'Dashboard', href: '/dashboard' },
-  { name: 'Explore', href: '#', badge: 'Soon' },
+  { name: 'Explore', href: '/explore' },
   { name: 'My Trails', href: '/trails' },
 ]
 
@@ -34,6 +34,9 @@ export function AppHeader({ user }: { user: UserProps }) {
   const isItemActive = (href: string) => {
     if (href === '/trails') {
       return pathname === '/trails' || (pathname.startsWith('/trails/') && pathname !== '/trails/new')
+    }
+    if (href === '/explore') {
+      return pathname === '/explore' || pathname.startsWith('/explore/')
     }
     return pathname === href
   }
@@ -120,7 +123,10 @@ export function AppHeader({ user }: { user: UserProps }) {
           <ThemeToggle />
 
           {/* User Badge */}
-          <div className="flex items-center gap-2.5 rounded-full border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] py-1 pl-1 pr-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors">
+          <TransitionLink
+            href={`/profile/${user.username}`}
+            className="flex items-center gap-2.5 rounded-full border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] py-1 pl-1 pr-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-[#7857FF]/40 transition-colors"
+          >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[11px] font-bold text-white uppercase">
               {initials}
             </span>
@@ -132,7 +138,7 @@ export function AppHeader({ user }: { user: UserProps }) {
                 @{user.username}
               </span>
             </div>
-          </div>
+          </TransitionLink>
 
           {/* Logout Button */}
           <button
@@ -168,7 +174,11 @@ export function AppHeader({ user }: { user: UserProps }) {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-[#111111]/[0.08] dark:border-white/10 bg-[#F6F5EF] dark:bg-[#0D0E10] px-6 py-4 space-y-4">
-          <div className="flex items-center gap-3 pb-3 border-b border-[#111111]/[0.08] dark:border-white/10">
+          <TransitionLink
+            href={`/profile/${user.username}`}
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-3 pb-3 border-b border-[#111111]/[0.08] dark:border-white/10 hover:opacity-80 transition-opacity"
+          >
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-bold text-white uppercase">
               {initials}
             </span>
@@ -180,7 +190,7 @@ export function AppHeader({ user }: { user: UserProps }) {
                 @{user.username}
               </p>
             </div>
-          </div>
+          </TransitionLink>
 
           <nav className="flex flex-col space-y-2">
             {NAV_ITEMS.map((item) => {

@@ -8,6 +8,8 @@ import {
 import { TransitionLink } from '@/components/animations/route-transition'
 import { TrailEntryForm } from '@/components/sparktrail/trail-entry-form'
 import { DeleteTrailButton } from '@/components/sparktrail/delete-trail-button'
+import { SparkButton } from '@/components/sparktrail/spark-button'
+import { CommentSection } from '@/components/sparktrail/comment-section'
 import { ArrowLeft, Sparkles, Lock, Globe, Clock } from 'lucide-react'
 import type { ProgressStatus } from '@prisma/client'
 
@@ -66,6 +68,20 @@ export default async function TrailDetailPage({
       },
       entries: {
         orderBy: { createdAt: 'desc' },
+      },
+      sparks: {
+        where: { userId: currentUser?.id ?? '' },
+      },
+      _count: {
+        select: { sparks: true },
+      },
+      comments: {
+        orderBy: { createdAt: 'asc' },
+        include: {
+          user: {
+            select: { name: true, username: true },
+          },
+        },
       },
     },
   })
@@ -145,8 +161,15 @@ export default async function TrailDetailPage({
             </span>
           </div>
 
-          {/* Owner Actions */}
-          {isOwner && <DeleteTrailButton trailId={trail.id} />}
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            <SparkButton 
+              trailId={trail.id} 
+              initialSparked={trail.sparks.length > 0} 
+              initialCount={trail._count.sparks} 
+            />
+            {isOwner && <DeleteTrailButton trailId={trail.id} />}
+          </div>
         </div>
 
         {/* Trail Title & Description */}
@@ -163,19 +186,19 @@ export default async function TrailDetailPage({
 
         {/* Creator Info Footer */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-[#111111]/[0.08] dark:border-white/10">
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-bold text-white uppercase">
+          <TransitionLink href={`/profile/${trail.user.username}`} className="flex items-center gap-3 group/author hover:opacity-80 transition-opacity">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#7857FF] to-[#5D3FD3] text-[12px] font-bold text-white uppercase group-hover/author:shadow-md transition-shadow">
               {userInitials}
             </span>
             <div>
-              <p className="text-[13.5px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
+              <p className="text-[13.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] group-hover/author:text-[#7857FF] transition-colors">
                 {trail.user.name}
               </p>
               <p className="text-[11.5px] text-[#737373] dark:text-[#A1A1AA]">
                 @{trail.user.username}
               </p>
             </div>
-          </div>
+          </TransitionLink>
 
           <div className="flex items-center gap-1.5 text-[12px] text-[#737373] dark:text-[#A1A1AA]">
             <Clock className="h-3.5 w-3.5" />
@@ -280,6 +303,10 @@ export default async function TrailDetailPage({
             })}
           </div>
         )}
+      </StaggerItem>
+
+      <StaggerItem y={20}>
+        <CommentSection trailId={trail.id} comments={trail.comments} />
       </StaggerItem>
     </StaggerContainer>
   )
