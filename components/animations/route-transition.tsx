@@ -6,6 +6,8 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
+  startTransition,
   ReactNode,
   MouseEvent,
 } from 'react'
@@ -105,6 +107,25 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(loaderTimer)
   }, [pathname])
 
+  const targetPathRef = useRef<string | null>(null)
+
+  // Coordinated route transition: detect when destination route has loaded
+  useEffect(() => {
+    if (targetPathRef.current) {
+      const currentCleanPath = pathname.split('?')[0]
+      const targetCleanPath = targetPathRef.current.split('?')[0]
+
+      if (currentCleanPath === targetCleanPath) {
+        targetPathRef.current = null
+        // Hold briefly so DOM and components are mounted, then release curtain
+        const timer = setTimeout(() => {
+          setIsTransitioning(false)
+        }, 120)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [pathname])
+
   const transitionTo = useCallback(
     (href: string) => {
       // Don't transition if already on the exact target pathname
@@ -119,16 +140,23 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
         return
       }
 
+      targetPathRef.current = href
       setIsTransitioning(true)
 
-      // Phase 1: Exit curtain sweep UP from bottom to cover viewport (850ms), then push route
+      // Phase 1: Exit curtain sweep UP to cover viewport (480ms), then push route
       setTimeout(() => {
-        router.push(href)
-        // Phase 2: Hold 150ms at full cover, then trigger curtain exit UP (total 1000ms)
+        startTransition(() => {
+          router.push(href)
+        })
+
+        // Safety fallback: if navigation takes longer than 2200ms, clear curtain
         setTimeout(() => {
-          setIsTransitioning(false)
-        }, 150)
-      }, 850)
+          if (targetPathRef.current) {
+            targetPathRef.current = null
+            setIsTransitioning(false)
+          }
+        }, 2200)
+      }, 480)
     },
     [pathname, router]
   )
@@ -166,8 +194,8 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
                   initial={{ opacity: 0, scale: 0.94, y: 12 }}
                   animate={
                     loadStage === 'exitLogo' ||
-                    loadStage === 'exitBar' ||
-                    loadStage === 'curtainUp'
+                      loadStage === 'exitBar' ||
+                      loadStage === 'curtainUp'
                       ? { opacity: 0, y: '-100vh', scale: 0.96 }
                       : { opacity: 1, scale: 1, y: 0 }
                   }
@@ -192,8 +220,8 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
                           loadStage === 'exitLogo' ||
                           loadStage === 'exitBar' ||
                           loadStage === 'curtainUp'
-                        ? { opacity: 0, y: -10 }
-                        : { opacity: 1, y: 0 }
+                          ? { opacity: 0, y: -10 }
+                          : { opacity: 1, y: 0 }
                     }
                     transition={{ duration: 0.4, ease: EASE_CINEMATIC }}
                     className="font-heading text-[58px] sm:text-[72px] font-bold tracking-tight text-[#111111] dark:text-[#FFFFFF] tabular-nums leading-none transform-gpu will-change-transform"
@@ -208,8 +236,8 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
                       loadStage === 'logo'
                         ? { opacity: 0, y: 12 }
                         : loadStage === 'exitBar' || loadStage === 'curtainUp'
-                        ? { opacity: 0, y: '-100vh' }
-                        : { opacity: 1, y: 0 }
+                          ? { opacity: 0, y: '-100vh' }
+                          : { opacity: 1, y: 0 }
                     }
                     transition={{ duration: 0.95, ease: EASE_CINEMATIC }}
                     className="h-[2.5px] w-48 sm:w-56 overflow-hidden rounded-full bg-[#111111]/10 dark:bg-white/10 transform-gpu will-change-transform"
@@ -237,7 +265,7 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
             initial={{ y: '100%' }}
             animate={{ y: '0%' }}
             exit={{ y: '-100%' }}
-            transition={{ duration: 0.85, ease: EASE_CINEMATIC }}
+            transition={{ duration: 0.55, ease: EASE_CINEMATIC }}
             aria-hidden="true"
             className="pointer-events-none fixed inset-0 z-[99998] flex flex-col justify-between bg-[#F6F5EF] dark:bg-[#0D0E10] transition-colors duration-200 transform-gpu will-change-transform"
           >

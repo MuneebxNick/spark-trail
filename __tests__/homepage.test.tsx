@@ -1,29 +1,23 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import Page from "@/app/page";
-
-// Next.js Link mock is sometimes needed if the environment doesn't support routing
-// but RTL usually handles simple <a href> rendering from next/link fine.
+import '@testing-library/jest-dom'
+import { render } from "@testing-library/react"
+import { describe, it, expect } from "vitest"
+import Page from "@/app/page"
+import { ThemeProvider } from "@/lib/theme-provider"
 
 describe("Homepage Smoke Test", () => {
   it("renders the approved visible content correctly", () => {
-    render(<Page />);
+    const { getByText, getAllByText } = render(
+      <ThemeProvider>
+        <Page />
+      </ThemeProvider>
+    );
 
-    // Brand / Navbar (might be multiple instances e.g. logo, footer)
-    expect(screen.getAllByText(/SparkTrail/i).length).toBeGreaterThan(0);
-
-    // Hero messages
-    expect(screen.getByText(/Small steps./i)).toBeInTheDocument();
-    expect(screen.getByText(/Real progress./i)).toBeInTheDocument();
-
-    // CTAs (could also be multiple)
-    expect(screen.getAllByText(/Start your trail/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Explore community/i).length).toBeGreaterThan(0);
-
-    // Progress state badge
-    expect(screen.getAllByText(/BUILDING/i).length).toBeGreaterThan(0);
-
-    // Teaser
-    expect(screen.getByText(/Progress has a story./i)).toBeInTheDocument();
+    expect(getAllByText(/SparkTrail/i).length).toBeGreaterThan(0);
+    expect(getByText(/Small steps./i)).toBeDefined();
+    expect(getByText(/Real progress./i)).toBeDefined();
+    expect(getAllByText(/Start your trail/i).length).toBeGreaterThan(0);
+    expect(getAllByText(/Explore community/i).length).toBeGreaterThan(0);
+    expect(getAllByText(/BUILDING/i).length).toBeGreaterThan(0);
+    expect(getByText(/Progress has a story./i)).toBeDefined();
   });
 });

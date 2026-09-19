@@ -1,13 +1,43 @@
 import { requireAuth } from '@/lib/auth/session'
+import { db } from '@/lib/db'
 import {
   StaggerContainer,
   StaggerItem,
 } from '@/components/animations/page-transition'
 import { TransitionLink } from '@/components/animations/route-transition'
 import { Plus, Compass, Activity, Sparkles, ArrowRight } from 'lucide-react'
+import { $Enums } from '@prisma/client'
+
+const STATUS_STYLES: Record<$Enums.ProgressStatus, string> = {
+  LEARNING: 'bg-[#7857FF] text-white',
+  BUILDING: 'bg-[#C7FF3D] text-[#111111]',
+  STUCK: 'bg-[#111111] text-[#F6F5EF]',
+  WIN: 'bg-[#C7FF3D] text-[#111111]',
+}
 
 export default async function DashboardPage() {
   const user = await requireAuth()
+
+  // Fetch real user trails from PostgreSQL DB
+  const userTrails = await db.trail.findMany({
+    where: { userId: user.id },
+    orderBy: { updatedAt: 'desc' },
+    include: {
+      entries: {
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
+      _count: {
+        select: { entries: true },
+      },
+    },
+  })
+
+  const activeTrailsCount = userTrails.length
+  const totalEntriesCount = userTrails.reduce(
+    (acc, t) => acc + t._count.entries,
+    0
+  )
 
   return (
     <StaggerContainer className="space-y-12">
@@ -31,11 +61,11 @@ export default async function DashboardPage() {
 
         <div className="pt-2">
           <TransitionLink
-            href="#"
+            href="/trails/new"
             className="inline-flex items-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF] dark:text-[#111111] hover:bg-[#111111]/85 dark:hover:bg-[#FFFFFF]/90 transition-all shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)]"
           >
             <Plus className="h-4 w-4 text-[#C7FF3D] dark:text-[#7857FF]" />
-            <span>Create your first trail</span>
+            <span>Create your next trail</span>
           </TransitionLink>
         </div>
       </StaggerItem>
@@ -48,31 +78,77 @@ export default async function DashboardPage() {
         <StaggerItem className="flex flex-col rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-7 transition-colors">
           <div className="flex items-center justify-between">
             <span className="font-heading text-[12px] font-semibold tracking-[0.12em] text-[#737373] dark:text-[#A1A1AA] uppercase">
-              01 / My Trails
+              01 / My Trails ({activeTrailsCount})
             </span>
             <Sparkles className="h-4 w-4 text-[#7857FF]" />
           </div>
 
-          <div className="mt-8 flex flex-1 flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
-                No active trails yet
-              </h2>
-              <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
-                Trails organize your progress around specific projects, skills, or
-                milestones. Start your first trail to log updates.
-              </p>
-            </div>
+          <div className="mt-6 flex flex-1 flex-col justify-between space-y-6">
+            {activeTrailsCount === 0 ? (
+              <div className="space-y-3">
+                <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
+                  No active trails yet
+                </h2>
+                <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
+                  Trails organize your progress around specific projects, skills, or
+                  milestones. Start your first trail to log updates.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {userTrails.slice(0, 3).map((trail) => (
+                  <TransitionLink
+                    key={trail.id}
+                    href={`/trails/${trail.id}`}
+                    className="group flex flex-col p-3 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] hover:border-[#7857FF]/40 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-heading text-[14px] font-semibold text-[#111111] dark:text-[#FFFFFF] group-hover:text-[#7857FF] transition-colors truncate max-w-[180px]">
+                        {trail.title}
+                      </span>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9.5px] font-bold tracking-[0.08em] ${STATUS_STYLES[trail.status]}`}
+                      >
+                        {trail.status}
+                      </span>
+                    </div>
+                    {trail.category && (
+                      <span className="mt-1 text-[11px] text-[#7857FF]">
+                        #{trail.category}
+                      </span>
+                    )}
+                  </TransitionLink>
+                ))}
+              </div>
+            )}
 
-            <div className="pt-2">
-              <TransitionLink
-                href="#"
-                className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#7857FF] hover:underline"
-              >
-                <span>Start a new trail</span>
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-              </TransitionLink>
-            </div>
+            {activeTrailsCount === 0 ? (
+              <div className="pt-2">
+                <TransitionLink
+                  href="/trails/new"
+                  className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#7857FF] hover:underline"
+                >
+                  <span>Start a new trail</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                </TransitionLink>
+              </div>
+            ) : (
+              <div className="pt-2 flex items-center justify-between">
+                <TransitionLink
+                  href="/trails"
+                  className="group inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-[#7857FF] hover:underline"
+                >
+                  <span>View all trails</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                </TransitionLink>
+                <TransitionLink
+                  href="/trails/new"
+                  className="text-[12.5px] font-medium text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors"
+                >
+                  + New trail
+                </TransitionLink>
+              </div>
+            )}
           </div>
         </StaggerItem>
 
@@ -85,20 +161,49 @@ export default async function DashboardPage() {
             <Activity className="h-4 w-4 text-[#737373] dark:text-[#A1A1AA]" />
           </div>
 
-          <div className="mt-8 flex flex-1 flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
-                Activity log is quiet
-              </h2>
-              <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
-                Your progress entries, blockers, and milestone wins will populate here in
-                chronological order as you build.
-              </p>
-            </div>
+          <div className="mt-6 flex flex-1 flex-col justify-between space-y-6">
+            {totalEntriesCount === 0 ? (
+              <div className="space-y-3">
+                <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
+                  Activity log is quiet
+                </h2>
+                <p className="text-[14px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
+                  Your progress entries, blockers, and milestone wins will populate here in
+                  chronological order as you build.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {userTrails
+                  .filter((t) => t.entries.length > 0)
+                  .slice(0, 3)
+                  .map((t) => {
+                    const entry = t.entries[0]
+                    return (
+                      <TransitionLink
+                        key={entry.id}
+                        href={`/trails/${t.id}`}
+                        className="group block p-3 rounded-xl border border-[#111111]/[0.06] dark:border-white/10 bg-[#FAFAFA] dark:bg-[#1A1C20] hover:border-[#7857FF]/40 transition-all"
+                      >
+                        <p className="text-[12.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] truncate">
+                          {t.title}
+                        </p>
+                        <p className="mt-1 text-[12px] text-[#737373] dark:text-[#A1A1AA] line-clamp-2">
+                          {entry.content}
+                        </p>
+                      </TransitionLink>
+                    )
+                  })}
+              </div>
+            )}
 
             <div className="flex items-center gap-2 text-[12.5px] text-[#737373] dark:text-[#71717A]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#10B981]" />
-              <span>Ready for your first update</span>
+              <span>
+                {activeTrailsCount > 0
+                  ? `${activeTrailsCount} active trail${activeTrailsCount > 1 ? 's' : ''} in studio`
+                  : 'Ready for your first update'}
+              </span>
             </div>
           </div>
         </StaggerItem>
@@ -112,7 +217,7 @@ export default async function DashboardPage() {
             <Compass className="h-4 w-4 text-[#737373] dark:text-[#A1A1AA]" />
           </div>
 
-          <div className="mt-8 flex flex-1 flex-col justify-between space-y-6">
+          <div className="mt-6 flex flex-1 flex-col justify-between space-y-6">
             <div className="space-y-3">
               <h2 className="font-heading text-[20px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
                 Feed updates coming soon

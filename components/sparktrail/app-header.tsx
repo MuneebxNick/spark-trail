@@ -20,9 +20,9 @@ interface UserProps {
 }
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/dashboard', active: true },
+  { name: 'Dashboard', href: '/dashboard' },
   { name: 'Explore', href: '#', badge: 'Soon' },
-  { name: 'My Trails', href: '#', badge: 'Soon' },
+  { name: 'My Trails', href: '/trails' },
 ]
 
 export function AppHeader({ user }: { user: UserProps }) {
@@ -30,6 +30,13 @@ export function AppHeader({ user }: { user: UserProps }) {
   const { transitionTo } = useRouteTransition()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const isItemActive = (href: string) => {
+    if (href === '/trails') {
+      return pathname === '/trails' || (pathname.startsWith('/trails/') && pathname !== '/trails/new')
+    }
+    return pathname === href
+  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
@@ -43,11 +50,11 @@ export function AppHeader({ user }: { user: UserProps }) {
 
   const initials = user.name
     ? user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
     : user.username.slice(0, 2).toUpperCase()
 
   return (
@@ -70,16 +77,15 @@ export function AppHeader({ user }: { user: UserProps }) {
             aria-label="Application Navigation"
           >
             {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = isItemActive(item.href)
               return (
                 <TransitionLink
                   key={item.name}
                   href={item.href}
-                  className={`group relative flex items-center gap-1.5 text-[13.5px] font-medium transition-colors duration-200 ${
-                    isActive
+                  className={`group relative flex items-center gap-1.5 text-[13.5px] font-medium transition-colors duration-200 ${isActive
                       ? 'text-[#111111] dark:text-[#FFFFFF] font-semibold'
                       : 'text-[#111111]/60 dark:text-[#FFFFFF]/60 hover:text-[#111111] dark:hover:text-[#FFFFFF]'
-                  }`}
+                    }`}
                 >
                   <span>{item.name}</span>
                   {item.badge && (
@@ -99,7 +105,7 @@ export function AppHeader({ user }: { user: UserProps }) {
         {/* Right User Actions */}
         <div className="hidden md:flex items-center gap-4">
           <TransitionLink
-            href="#"
+            href="/trails/new"
             className="group inline-flex items-center gap-1.5 rounded-full border border-[#111111]/10 dark:border-white/10 bg-white dark:bg-[#16171A] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#111111] dark:text-[#FFFFFF] hover:border-[#7857FF]/40 transition-colors"
           >
             <Plus className="h-3.5 w-3.5 text-[#7857FF]" />
@@ -177,21 +183,28 @@ export function AppHeader({ user }: { user: UserProps }) {
           </div>
 
           <nav className="flex flex-col space-y-2">
-            {NAV_ITEMS.map((item) => (
-              <TransitionLink
-                key={item.name}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between py-2 text-[14px] font-medium text-[#111111] dark:text-[#FFFFFF]"
-              >
-                <span>{item.name}</span>
-                {item.badge && (
-                  <span className="rounded-full bg-[#111111]/5 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-[#737373] dark:text-[#A1A1AA]">
-                    {item.badge}
-                  </span>
-                )}
-              </TransitionLink>
-            ))}
+            {NAV_ITEMS.map((item) => {
+              const isActive = isItemActive(item.href)
+              return (
+                <TransitionLink
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between py-2 text-[14px] font-medium transition-colors ${
+                    isActive
+                      ? 'text-[#7857FF] font-semibold'
+                      : 'text-[#111111] dark:text-[#FFFFFF]'
+                  }`}
+                >
+                  <span>{item.name}</span>
+                  {item.badge && (
+                    <span className="rounded-full bg-[#111111]/5 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-[#737373] dark:text-[#A1A1AA]">
+                      {item.badge}
+                    </span>
+                  )}
+                </TransitionLink>
+              )
+            })}
           </nav>
 
           <div className="pt-2 border-t border-[#111111]/[0.08] dark:border-white/10">

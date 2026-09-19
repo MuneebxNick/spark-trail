@@ -15,15 +15,11 @@ export function PageTransition({ children }: { children: ReactNode }) {
   return (
     <motion.div
       key={pathname}
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
-      animate={
-        isTransitioning
-          ? { opacity: 0, y: shouldReduceMotion ? 0 : 10 }
-          : { opacity: 1, y: 0 }
-      }
-      exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isTransitioning ? 0 : 1 }}
+      exit={{ opacity: 0 }}
       transition={{
-        duration: shouldReduceMotion ? 0.01 : 0.38,
+        duration: shouldReduceMotion ? 0.01 : 0.32,
         ease: EASE_CINEMATIC,
       }}
     >
@@ -35,8 +31,8 @@ export function PageTransition({ children }: { children: ReactNode }) {
 export function StaggerContainer({
   children,
   className = '',
-  delay = 0.06,
-  stagger = 0.07,
+  delay = 0.08,
+  stagger = 0.08,
 }: {
   children: ReactNode
   className?: string
@@ -63,7 +59,7 @@ export function StaggerContainer({
       key={pathname}
       variants={containerVariants}
       initial="hidden"
-      animate="visible"
+      animate={isTransitioning ? 'hidden' : 'visible'}
       className={className}
     >
       {children}
@@ -75,7 +71,7 @@ export function StaggerItem({
   children,
   className = '',
   y = 12,
-  duration = 0.48,
+  duration = 0.45,
 }: {
   children: ReactNode
   className?: string
@@ -102,5 +98,3 @@ export function StaggerItem({
     </motion.div>
   )
 }
-
-
