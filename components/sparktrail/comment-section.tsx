@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { addComment, updateComment, deleteComment } from '@/actions/comments'
-import { MessageSquare, Send, MoreHorizontal, Edit2, Trash2, Loader2 } from 'lucide-react'
+import { addComment, updateComment, deleteComment, getMoreComments } from '@/actions/comments'
+import { MessageSquare, Send, MoreHorizontal, Edit2, Trash2, Loader2, ChevronDown } from 'lucide-react'
 import { TransitionLink } from '@/components/animations/route-transition'
 import { UserAvatar } from '@/components/sparktrail/user-avatar'
 
@@ -22,7 +22,8 @@ interface Comment {
 
 interface CommentSectionProps {
   trailId: string
-  comments: Comment[]
+  initialComments: Comment[]
+  totalComments: number
   currentUserId?: string
 }
 
@@ -172,9 +173,57 @@ function CommentItem({ comment, isOwner }: { comment: Comment; isOwner: boolean 
   )
 }
 
-export function CommentSection({ trailId, comments, currentUserId }: CommentSectionProps) {
+export function CommentSection({ trailId, initialComments, totalComments, currentUserId }: CommentSectionProps) {
+  const [comments, setComments] = useState<Comment[]>(initialComments)
   const [content, setContent] = useState('')
   const [isPending, setIsPending] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(initialComments.length < totalComments)
+
+  // Sync state with server revalidations (e.g. after adding a comment or another user's comment)
+  useEffect(() => {
+    setComments((prev) => {
+      const merged = [...initialComments]
+      for (const p of prev) {
+        if (!merged.some((m) => m.id === p.id)) {
+          merged.push(p)
+        }
+      }
+      return merged.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    })
+    
+    if (initialComments.length < totalComments) {
+      setHasMore(true)
+    }
+  }, [initialComments, totalComments])
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore || comments.length === 0) return
+
+    setIsLoadingMore(true)
+    const lastCommentId = comments[comments.length - 1].id
+    
+    const result = await getMoreComments(trailId, lastCommentId, 20)
+    
+    if (result.success && result.comments) {
+      setComments((prev) => {
+        const merged = [...prev]
+        for (const newComment of (result.comments as Comment[]) || []) {
+          if (!merged.some((m) => m.id === newComment.id)) {
+            merged.push(newComment)
+          }
+        }
+        return merged.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      })
+      if (comments.length + result.comments.length >= totalComments || result.comments.length < 20) {
+        setHasMore(false)
+      }
+    } else {
+      console.error(result.error)
+    }
+    
+    setIsLoadingMore(false)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -197,7 +246,7 @@ export function CommentSection({ trailId, comments, currentUserId }: CommentSect
       <div className="flex items-center gap-2">
         <MessageSquare className="h-4 w-4 text-[#7857FF]" />
         <h3 className="font-heading text-[15px] font-semibold text-[#111111] dark:text-[#FFFFFF]">
-          Comments ({comments.length})
+          Comments ({totalComments})
         </h3>
       </div>
 
@@ -211,6 +260,19 @@ export function CommentSection({ trailId, comments, currentUserId }: CommentSect
             {comments.map((comment) => (
               <CommentItem key={comment.id} comment={comment} isOwner={comment.userId === currentUserId} />
             ))}
+            
+            {hasMore && (
+              <div className="pt-2 flex justify-center">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="flex items-center gap-2 rounded-full border border-[#111111]/10 dark:border-white/10 bg-white/80 dark:bg-[#16171A]/80 px-5 py-2 text-[12px] font-semibold text-[#111111] dark:text-[#FFFFFF] shadow-sm hover:bg-[#111111]/5 dark:hover:bg-white/5 transition-all disabled:opacity-50"
+                >
+                  {isLoadingMore ? <Loader2 className="h-3.5 w-3.5 animate-spin text-[#7857FF]" /> : <ChevronDown className="h-3.5 w-3.5 text-[#737373]" />}
+                  <span>{isLoadingMore ? 'Loading...' : 'Load more comments'}</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

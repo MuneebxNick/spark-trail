@@ -14,7 +14,7 @@ export default async function FollowersPage({
   const { username } = await params
   const currentUser = await getCurrentUser()
   
-  const { success, users, profileUser } = await getFollowers(username)
+  const { success, users, profileUser, nextCursor } = await getFollowers(username)
 
   if (!success || !profileUser) {
     notFound()
@@ -42,7 +42,13 @@ export default async function FollowersPage({
       </StaggerItem>
 
       <StaggerItem>
-        <UserList users={users || []} currentUserId={currentUser?.id} />
+        <UserList 
+          initialUsers={users || []} 
+          initialNextCursor={nextCursor} 
+          currentUserId={currentUser?.id} 
+          profileUsername={profileUser.username}
+          listType="followers"
+        />
       </StaggerItem>
     </StaggerContainer>
   )

@@ -12,7 +12,7 @@ export default function AuthLayout({
     <div className="min-h-svh bg-[#F6F5EF] dark:bg-[#0D0E10] text-[#111111] dark:text-[#FFFFFF] transition-colors duration-300 flex flex-col justify-between">
       {/* Top Header */}
       <header className="w-full border-b border-[#111111]/[0.08] dark:border-white/10 bg-[#F6F5EF]/80 dark:bg-[#0D0E10]/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-10 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-10 py-3.5">
           <TransitionLink
             href="/"
             className="flex items-center gap-2.5 rounded-sm transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#7857FF]"
@@ -37,13 +37,13 @@ export default function AuthLayout({
       </header>
 
       {/* Main Content Container */}
-      <main className="flex-1 flex items-center justify-center px-6 md:px-10 py-12 md:py-20">
+      <main className="flex-1 flex items-center justify-center px-6 md:px-10 py-6 sm:py-8 lg:py-6">
         <div className="w-full max-w-5xl">{children}</div>
       </main>
 
       {/* Footer minimal brand tagline */}
-      <footer className="w-full border-t border-[#111111]/[0.08] dark:border-white/10 py-6 text-center text-[12px] text-[#737373] dark:text-[#71717A]">
-        <p>SparkTrail &mdash; Small steps. Real progress.</p>
+      <footer className="w-full border-t border-[#111111]/[0.08] dark:border-white/10 py-4 text-center text-[12px] text-[#737373] dark:text-[#71717A]">
+        <p>SparkTrail. Small steps. Real progress.</p>
       </footer>
     </div>
   )

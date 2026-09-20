@@ -458,3 +458,22 @@ export async function updateTrailStatus(
     return { success: false, error: 'Failed to update trail status.' }
   }
 }
+
+/**
+ * Server Action: Fetches more trail entries for pagination.
+ */
+export async function getMoreTrailEntries(trailId: string, cursor: string, take: number = 20) {
+  try {
+    const entries = await db.trailEntry.findMany({
+      where: { trailId },
+      take,
+      skip: 1, // Skip the cursor
+      cursor: { id: cursor },
+      orderBy: { createdAt: 'desc' },
+    })
+    return { success: true, entries }
+  } catch (error) {
+    console.error('Failed to fetch more entries:', error)
+    return { success: false, error: 'Failed to fetch more entries.' }
+  }
+}

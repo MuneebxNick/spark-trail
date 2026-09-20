@@ -11,7 +11,7 @@ import { DeleteTrailButton } from '@/components/sparktrail/delete-trail-button'
 import { SparkButton } from '@/components/sparktrail/spark-button'
 import { CommentSection } from '@/components/sparktrail/comment-section'
 import { UserAvatar } from '@/components/sparktrail/user-avatar'
-import { TrailEntryItem } from '@/components/sparktrail/trail-entry-item'
+import { TrailEntryList } from '@/components/sparktrail/trail-entry-list'
 import { ArrowLeft, Sparkles, Lock, Globe, Clock, Edit2 } from 'lucide-react'
 import type { ProgressStatus } from '@prisma/client'
 
@@ -75,15 +75,17 @@ export default async function TrailDetailPage({
       },
       entries: {
         orderBy: { createdAt: 'desc' },
+        take: 20,
       },
       sparks: {
         where: { userId: currentUser?.id ?? '' },
       },
       _count: {
-        select: { sparks: true },
+        select: { sparks: true, entries: true, comments: true },
       },
       comments: {
         orderBy: { createdAt: 'asc' },
+        take: 20,
         include: {
           user: {
             select: { name: true, username: true, avatarUrl: true },
@@ -253,7 +255,7 @@ export default async function TrailDetailPage({
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[#7857FF]" />
             <h2 className="font-heading text-[13px] font-semibold tracking-[0.14em] text-[#7857FF] uppercase">
-              Journey Timeline ({trail.entries.length})
+              Journey Timeline ({trail._count.entries})
             </h2>
           </div>
         </div>
@@ -278,23 +280,23 @@ export default async function TrailDetailPage({
           </div>
         ) : (
           /* Timeline Entry Cards */
-          <div className="relative pl-6 sm:pl-10 space-y-8">
-            {/* Vertical Trail Line */}
-            <div
-              className="absolute left-[11px] sm:left-[19px] top-4 bottom-4 w-[2px] bg-[#111111]/[0.08] dark:bg-white/10"
-              aria-hidden="true"
-            />
-
-            {trail.entries.map((entry) => (
-              <TrailEntryItem key={entry.id} entry={entry} isOwner={isOwner} />
-            ))}
-          </div>
+          <TrailEntryList 
+            trailId={trail.id} 
+            initialEntries={trail.entries} 
+            totalEntries={trail._count.entries} 
+            isOwner={isOwner} 
+          />
         )}
       </StaggerItem>
 
       {/* Comments Section */}
       <StaggerItem y={20}>
-        <CommentSection trailId={trail.id} comments={trail.comments} currentUserId={currentUser?.id} />
+        <CommentSection 
+          trailId={trail.id} 
+          initialComments={trail.comments} 
+          totalComments={trail._count.comments} 
+          currentUserId={currentUser?.id} 
+        />
       </StaggerItem>
     </StaggerContainer>
   )

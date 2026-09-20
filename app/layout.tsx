@@ -22,9 +22,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'SparkTrail — Small steps. Real progress.',
+  title: 'SparkTrail. Small steps. Real progress.',
   description:
-    'Share what you\u2019re learning, building, fixing and winning \u2014 without the noise of traditional social media.',
+    'Share what you\u2019re learning, building, fixing and winning without the noise of traditional social media.',
   generator: 'v0.app',
   icons: {
     icon: [

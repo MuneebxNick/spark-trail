@@ -65,7 +65,7 @@ export function Hero() {
                 className="max-w-md text-[17px] leading-relaxed text-[#737373] dark:text-[#D4D4D8] transition-colors duration-200"
               >
                 Share what you&apos;re learning, building, fixing and winning
-                &mdash; without the noise of traditional social media.
+                without the noise of traditional social media.
               </motion.p>
             </div>
 

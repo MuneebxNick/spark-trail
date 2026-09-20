@@ -192,7 +192,7 @@ export function WhySection() {
                 <span className="trail-dot h-3 w-3 rounded-full bg-[#111111]/10 dark:bg-white/10 transition-colors" />
               </div>
               <RevealText
-                text="Every attempt, every blocker, every small win logged along the way — the part that actually explains the result."
+                text="Every attempt, every blocker, every small win logged along the way. The part that actually explains the result."
                 className="mt-8 max-w-sm text-[17px] leading-relaxed"
               />
             </div>

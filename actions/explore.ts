@@ -2,15 +2,16 @@
 
 import { db } from '@/lib/db'
 
-export async function getExploreFeed() {
+export async function getExploreFeed(cursor?: string, take: number = 12) {
   try {
     const trails = await db.trail.findMany({
       where: {
         isPublic: true,
       },
-      orderBy: {
-        updatedAt: 'desc',
-      },
+      orderBy: [
+        { updatedAt: 'desc' },
+        { id: 'desc' }
+      ],
       include: {
         user: {
           select: {
@@ -34,10 +35,24 @@ export async function getExploreFeed() {
           take: 1,
         },
       },
-      take: 50,
+      take: take + 1, // Fetch one extra to determine if there are more
+      ...(cursor
+        ? {
+            skip: 1,
+            cursor: {
+              id: cursor,
+            },
+          }
+        : {}),
     })
 
-    return { success: true, trails }
+    let nextCursor: string | undefined = undefined
+    if (trails.length > take) {
+      const nextItem = trails.pop()
+      nextCursor = nextItem?.id
+    }
+
+    return { success: true, trails, nextCursor }
   } catch (error) {
     console.error('Failed to fetch explore feed:', error)
     return { success: false, error: 'Failed to load community feed.' }

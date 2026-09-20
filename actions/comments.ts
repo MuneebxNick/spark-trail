@@ -109,3 +109,24 @@ export async function deleteComment(commentId: string) {
     return { success: false, error: 'Failed to delete comment.' }
   }
 }
+
+export async function getMoreComments(trailId: string, cursor: string, take: number = 20) {
+  try {
+    const comments = await db.comment.findMany({
+      where: { trailId },
+      take,
+      skip: 1, // Skip the cursor
+      cursor: { id: cursor },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        user: {
+          select: { name: true, username: true, avatarUrl: true },
+        },
+      },
+    })
+    return { success: true, comments }
+  } catch (error) {
+    console.error('Failed to fetch more comments:', error)
+    return { success: false, error: 'Failed to fetch more comments.' }
+  }
+}

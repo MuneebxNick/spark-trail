@@ -11,7 +11,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-svh bg-[#F6F5EF] dark:bg-[#0D0E10] text-[#111111] dark:text-[#FFFFFF] transition-colors duration-300">
       <AppHeader user={user} />
-      <main className="mx-auto max-w-7xl px-6 md:px-10 py-10 md:py-14">
+      <main className="mx-auto max-w-7xl px-6 md:px-10 pt-6 md:pt-8 pb-14 md:pb-16">
         {children}
       </main>
     </div>

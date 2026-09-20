@@ -98,7 +98,7 @@ export async function toggleFollow(targetUserId: string) {
   }
 }
 
-export async function getFollowers(username: string) {
+export async function getFollowers(username: string, cursor?: string, take: number = 20) {
   try {
     const currentUser = await getCurrentUser()
     const profileUser = await db.user.findUnique({
@@ -110,6 +110,16 @@ export async function getFollowers(username: string) {
 
     const followers = await db.follows.findMany({
       where: { followingId: profileUser.id },
+      take: take + 1,
+      ...(cursor ? {
+        skip: 1,
+        cursor: {
+          followerId_followingId: {
+            followerId: cursor,
+            followingId: profileUser.id
+          }
+        }
+      } : {}),
       include: {
         follower: {
           select: {
@@ -125,22 +135,31 @@ export async function getFollowers(username: string) {
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: [
+        { createdAt: 'desc' },
+        { followerId: 'desc' }
+      ]
     })
+
+    let nextCursor: string | undefined = undefined
+    if (followers.length > take) {
+      const nextItem = followers.pop()
+      nextCursor = nextItem?.followerId
+    }
 
     const users = followers.map(f => ({
       ...f.follower,
       isFollowing: f.follower.followers ? f.follower.followers.length > 0 : false
     }))
 
-    return { success: true, users, profileUser }
+    return { success: true, users, profileUser, nextCursor }
   } catch (error) {
     console.error('Failed to load followers:', error)
     return { success: false, error: 'Failed to load followers' }
   }
 }
 
-export async function getFollowing(username: string) {
+export async function getFollowing(username: string, cursor?: string, take: number = 20) {
   try {
     const currentUser = await getCurrentUser()
     const profileUser = await db.user.findUnique({
@@ -152,6 +171,16 @@ export async function getFollowing(username: string) {
 
     const following = await db.follows.findMany({
       where: { followerId: profileUser.id },
+      take: take + 1,
+      ...(cursor ? {
+        skip: 1,
+        cursor: {
+          followerId_followingId: {
+            followerId: profileUser.id,
+            followingId: cursor
+          }
+        }
+      } : {}),
       include: {
         following: {
           select: {
@@ -167,15 +196,24 @@ export async function getFollowing(username: string) {
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: [
+        { createdAt: 'desc' },
+        { followingId: 'desc' }
+      ]
     })
+
+    let nextCursor: string | undefined = undefined
+    if (following.length > take) {
+      const nextItem = following.pop()
+      nextCursor = nextItem?.followingId
+    }
 
     const users = following.map(f => ({
       ...f.following,
       isFollowing: f.following.followers ? f.following.followers.length > 0 : false
     }))
 
-    return { success: true, users, profileUser }
+    return { success: true, users, profileUser, nextCursor }
   } catch (error) {
     console.error('Failed to load following:', error)
     return { success: false, error: 'Failed to load following' }

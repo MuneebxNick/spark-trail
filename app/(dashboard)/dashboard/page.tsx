@@ -72,9 +72,9 @@ export default async function DashboardPage() {
     publicTrailsCount > 0
 
   return (
-    <StaggerContainer className="space-y-12">
+    <StaggerContainer className="space-y-8 md:space-y-9">
       {/* Personalized Welcome Header */}
-      <StaggerItem className="flex flex-col items-start space-y-4">
+      <StaggerItem className="flex flex-col items-start space-y-3 md:space-y-3.5">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-[#7857FF]" />
           <p className="text-[12px] font-semibold tracking-[0.14em] text-[#7857FF] uppercase">
@@ -82,19 +82,19 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <h1 className="font-heading text-[32px] font-semibold leading-tight tracking-tight text-[#111111] dark:text-[#FFFFFF] sm:text-[42px] md:text-[48px]">
+        <h1 className="font-heading text-[28px] font-semibold leading-tight tracking-tight text-[#111111] dark:text-[#FFFFFF] sm:text-[34px] md:text-[38px]">
           Welcome back, {user.name}.
         </h1>
 
-        <p className="max-w-xl text-[16px] leading-relaxed text-[#737373] dark:text-[#D4D4D8]">
+        <p className="max-w-xl text-[15px] leading-relaxed text-[#737373] dark:text-[#D4D4D8]">
           Progress has a story. Document what you are learning, building, fixing,
-          and winning &mdash; step by step, without the noise.
+          and winning step by step, without the noise.
         </p>
 
-        <div className="pt-2">
+        <div className="pt-1">
           <TransitionLink
             href="/trails/new"
-            className="inline-flex items-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-6 py-3.5 text-[14px] font-semibold text-[#F6F5EF] dark:text-[#111111] hover:bg-[#111111]/85 dark:hover:bg-[#FFFFFF]/90 transition-all shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)]"
+            className="inline-flex items-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-5 py-2.5 sm:px-6 sm:py-3 text-[13.5px] font-semibold text-[#F6F5EF] dark:text-[#111111] hover:bg-[#111111]/85 dark:hover:bg-[#FFFFFF]/90 transition-all shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)]"
           >
             <Plus className="h-4 w-4 text-[#C7FF3D] dark:text-[#7857FF]" />
             <span>Create your next trail</span>
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
       <hr className="border-[#111111]/[0.08] dark:border-white/10" />
 
       {/* Editorial Overview Grid */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Section 01: My Trails */}
         <StaggerItem className="flex flex-col rounded-2xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-7 transition-colors">
           <div className="flex items-center justify-between">
