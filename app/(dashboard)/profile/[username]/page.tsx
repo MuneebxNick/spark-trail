@@ -34,10 +34,6 @@ export default async function ProfilePage({
 
   const isOwnProfile = currentUser?.id === profile.id
 
-  const initials = profile.name
-    ? profile.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
-    : profile.username.slice(0, 2).toUpperCase()
-
   return (
     <StaggerContainer className="space-y-12">
       {/* Profile Header */}

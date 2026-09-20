@@ -24,10 +24,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'SparkTrail. Small steps. Real progress.',
   description:
-    'Share what you\u2019re learning, building, fixing and winning without the noise of traditional social media.',
-  generator: 'v0.app',
+    'Share what you’re learning, building, fixing and winning without the noise of traditional social media.',
   icons: {
     icon: [
+      {
+        url: '/icon.svg',
+        type: 'image/svg+xml',
+      },
       {
         url: '/icon-light-32x32.png',
         media: '(prefers-color-scheme: light)',
@@ -37,8 +40,7 @@ export const metadata: Metadata = {
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/favicon.ico',
       },
     ],
     apple: '/apple-icon.png',

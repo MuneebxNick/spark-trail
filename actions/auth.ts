@@ -66,7 +66,7 @@ export async function registerUser(data: RegisterInput): Promise<AuthActionResul
     console.error('Registration error:', err)
     return {
       success: false,
-      error: 'Database error or service unavailable. Please ensure DATABASE_URL is configured.',
+      error: 'Unable to create account right now. Please try again in a moment.',
     }
   }
 }
@@ -113,7 +113,7 @@ export async function loginUser(data: LoginInput): Promise<AuthActionResult> {
     console.error('Login error:', err)
     return {
       success: false,
-      error: 'Database error or service unavailable. Please ensure DATABASE_URL is configured.',
+      error: 'Unable to log in right now. Please try again in a moment.',
     }
   }
 }

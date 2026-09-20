@@ -162,7 +162,7 @@ function LoginForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center rounded-full bg-[#111111] dark:bg-[#FFFFFF] px-7 py-2.5 text-[13.5px] sm:text-[14px] font-semibold text-[#F6F5EF] dark:text-[#111111] shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)] hover:bg-[#111111]/88 dark:hover:bg-[#FFFFFF]/88 transition-all disabled:opacity-50"
+                className="w-full rounded-full bg-[#111111] dark:bg-[#FFFFFF] py-2.5 sm:py-3 text-[13.5px] sm:text-[14px] font-semibold text-[#F6F5EF] dark:text-[#111111] shadow-[0_4px_14px_-4px_rgba(17,17,17,0.35)] dark:shadow-[0_4px_14px_-4px_rgba(255,255,255,0.2)] hover:bg-[#111111]/88 dark:hover:bg-[#FFFFFF]/88 transition-all disabled:opacity-50"
               >
                 {isSubmitting ? 'Logging in...' : 'Log in'}
               </button>

@@ -332,7 +332,10 @@ export function AppHeader({
 
               <div className="pt-2 border-t border-[#111111]/[0.08] dark:border-white/10 space-y-1">
                 <button
-                  onClick={() => setIsNotificationsOpen(true)}
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setIsNotificationsOpen(true)
+                  }}
                   className="w-full flex items-center gap-2 text-[13.5px] font-medium text-[#111111] dark:text-[#FFFFFF] py-2 justify-between"
                 >
                   <div className="flex items-center gap-2">

@@ -4,22 +4,8 @@ import {
   StaggerContainer,
   StaggerItem,
 } from '@/components/animations/page-transition'
-import { TransitionLink } from '@/components/animations/route-transition'
-import { UserAvatar } from '@/components/sparktrail/user-avatar'
-import {
-  ArrowRight,
-  Clock,
-  Layers,
-  Compass,
-} from 'lucide-react'
+import { Compass } from 'lucide-react'
 import { ExploreFeed } from '@/components/sparktrail/explore-feed'
-import { $Enums } from '@prisma/client'
-const STATUS_STYLES: Record<$Enums.ProgressStatus, string> = {
-  LEARNING: 'bg-[#7857FF] text-white',
-  BUILDING: 'bg-[#C7FF3D] text-[#111111]',
-  STUCK: 'bg-[#111111] text-[#F6F5EF]',
-  WIN: 'bg-[#C7FF3D] text-[#111111]',
-}
 
 export default async function ExplorePage() {
   const currentUser = await requireAuth()

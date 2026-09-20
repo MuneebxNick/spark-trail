@@ -124,13 +124,15 @@ export function TrailEntryItem({ entry, isOwner }: TrailEntryProps) {
                   <div className="relative">
                     <button
                       onClick={() => setShowMenu(!showMenu)}
+                      aria-label="Entry options"
+                      aria-expanded={showMenu}
                       className={`p-1 rounded-full text-[#737373] hover:bg-[#111111]/5 dark:hover:bg-white/10 transition-colors focus:opacity-100 ${showMenu ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
                     {showMenu && (
                       <>
-                        <div className="fixed inset-0 z-40" onClick={() => { setShowMenu(false); setDeleteConfirm(false); }} />
+                        <div className="fixed inset-0 z-40" aria-hidden="true" onClick={() => { setShowMenu(false); setDeleteConfirm(false); }} />
                         <div className="absolute right-0 top-full mt-1 w-32 rounded-xl border border-[#111111]/[0.08] dark:border-white/10 bg-white dark:bg-[#16171A] p-1 shadow-lg z-50 overflow-hidden">
                           {!deleteConfirm ? (
                             <>

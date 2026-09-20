@@ -55,7 +55,7 @@ export async function updateProfile(data: UpdateProfileInput): Promise<SettingsA
       if (!isCloudinaryConfigured) {
         return {
           success: false,
-          error: 'Cloudinary credentials are not configured. Avatar upload is unavailable.',
+          error: 'Avatar upload is currently unavailable. Please try again later.',
         }
       }
 

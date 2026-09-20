@@ -2,16 +2,18 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
 const COOKIE_NAME = 'sparktrail_session'
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'sparktrail_fallback_secret_must_be_32_chars_long'
-)
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is missing')
+}
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
 
 // Routes requiring authentication
 const PROTECTED_ROUTES = ['/dashboard', '/trails/new', '/settings']
 // Routes restricted for authenticated users
 const AUTH_ONLY_ROUTES = ['/login', '/register']
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const token = req.cookies.get(COOKIE_NAME)?.value
 

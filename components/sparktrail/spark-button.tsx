@@ -40,6 +40,8 @@ export function SparkButton({ trailId, initialSparked, initialCount }: SparkButt
       type="button"
       onClick={handleToggle}
       disabled={isPending}
+      aria-label={isSparked ? 'Remove spark' : 'Spark this trail'}
+      aria-pressed={isSparked}
       className={`group flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-medium transition-all ${
         isSparked
           ? 'bg-[#7857FF]/10 text-[#7857FF] hover:bg-[#7857FF]/15'

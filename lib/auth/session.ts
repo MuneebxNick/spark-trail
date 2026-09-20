@@ -4,9 +4,11 @@ import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 
 const COOKIE_NAME = 'sparktrail_session'
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'sparktrail_fallback_secret_must_be_32_chars_long'
-)
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is missing')
+}
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
 
 export interface SessionPayload {
   userId: string

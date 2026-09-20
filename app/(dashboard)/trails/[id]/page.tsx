@@ -22,13 +22,6 @@ const STATUS_STYLES: Record<ProgressStatus, string> = {
   WIN: 'bg-[#C7FF3D] text-[#111111]',
 }
 
-const STATUS_NODE_COLORS: Record<ProgressStatus, string> = {
-  LEARNING: '#7857FF',
-  BUILDING: '#C7FF3D',
-  STUCK: '#111111',
-  WIN: '#C7FF3D',
-}
-
 function StatusBadge({ status }: { status: ProgressStatus }) {
   return (
     <span
@@ -122,15 +115,6 @@ export default async function TrailDetailPage({
       </div>
     )
   }
-
-  const userInitials = trail.user.name
-    ? trail.user.name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-    : trail.user.username.slice(0, 2).toUpperCase()
 
   let backHref = isOwner ? '/trails' : '/explore'
   let backLabel = isOwner ? 'Back to studio' : 'Back to explore'

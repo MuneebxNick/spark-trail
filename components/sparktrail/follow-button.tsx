@@ -33,6 +33,8 @@ export function FollowButton({ targetUserId, initialFollowing }: FollowButtonPro
       type="button"
       onClick={handleToggle}
       disabled={isPending}
+      aria-label={isFollowing ? 'Unfollow this user' : 'Follow this user'}
+      aria-pressed={isFollowing}
       className={`group flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold transition-all shadow-sm ${
         isFollowing
           ? 'bg-[#111111]/5 dark:bg-white/10 text-[#111111] dark:text-[#FFFFFF] hover:bg-[#111111]/10 dark:hover:bg-white/15'

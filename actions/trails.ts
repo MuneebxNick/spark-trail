@@ -65,7 +65,7 @@ export async function createTrail(data: CreateTrailInput): Promise<TrailActionRe
     console.error('Error creating trail:', err)
     return {
       success: false,
-      error: 'Failed to create trail. Please check your database connection.',
+      error: 'Unable to create trail. Please try again in a moment.',
     }
   }
 }
@@ -189,7 +189,7 @@ export async function addTrailEntry(data: AddTrailEntryInput): Promise<TrailActi
         return {
           success: false,
           error:
-            'Cloudinary credentials are not configured in your environment. Please add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET to .env to upload local images, or link a public image URL.',
+            'Image upload is currently unavailable. You can link a public image URL instead.',
         }
       }
 
@@ -198,7 +198,7 @@ export async function addTrailEntry(data: AddTrailEntryInput): Promise<TrailActi
         finalMediaUrl = uploadResult.url
       } catch (uploadErr) {
         console.error('Cloudinary upload error:', uploadErr)
-        let safeErrorMessage = 'Image upload to Cloudinary failed. Please try again.'
+        let safeErrorMessage = 'Image upload failed. Please try again.'
         if (uploadErr instanceof Error) {
           if (
             uploadErr.message.includes('maximum allowed size') ||
@@ -296,7 +296,7 @@ export async function updateTrailEntry(data: UpdateTrailEntryInput): Promise<Tra
       if (!isCloudinaryConfigured) {
         return {
           success: false,
-          error: 'Cloudinary credentials are not configured.',
+          error: 'Image upload is currently unavailable.',
         }
       }
 

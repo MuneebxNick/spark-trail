@@ -168,6 +168,7 @@ export function NotificationsPopover({ isOpen, onClose }: NotificationsPopoverPr
               onClick={handleMarkAllRead}
               className="p-1.5 text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors rounded-md hover:bg-[#111111]/5 dark:hover:bg-white/10"
               title="Mark all as read"
+              aria-label="Mark all as read"
             >
               <Check className="w-4 h-4" />
             </button>
@@ -176,6 +177,7 @@ export function NotificationsPopover({ isOpen, onClose }: NotificationsPopoverPr
             onClick={onClose}
             className="p-1.5 md:hidden text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] transition-colors rounded-md hover:bg-[#111111]/5 dark:hover:bg-white/10"
             title="Close"
+            aria-label="Close notifications"
           >
             <X className="w-5 h-5" />
           </button>

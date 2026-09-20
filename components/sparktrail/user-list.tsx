@@ -75,7 +75,7 @@ export function UserList({ initialUsers, initialNextCursor, currentUserId, profi
     return (
       <div className="rounded-2xl border border-dashed border-[#111111]/15 dark:border-white/15 bg-white/40 dark:bg-[#16171A]/40 p-12 text-center">
         <p className="text-[14.5px] leading-relaxed text-[#737373] dark:text-[#A1A1AA]">
-          No users found.
+          {listType === 'followers' ? 'No followers yet.' : 'Not following anyone yet.'}
         </p>
       </div>
     )
