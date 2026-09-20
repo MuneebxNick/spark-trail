@@ -80,12 +80,28 @@ export async function toggleFollow(targetUserId: string) {
           },
         },
       })
+
+      await db.notification.deleteMany({
+        where: {
+          type: 'NEW_FOLLOWER',
+          actorId: user.id,
+          recipientId: targetUserId,
+        }
+      })
     } else {
       await db.follows.create({
         data: {
           followerId: user.id,
           followingId: targetUserId,
         },
+      })
+
+      await db.notification.create({
+        data: {
+          type: 'NEW_FOLLOWER',
+          actorId: user.id,
+          recipientId: targetUserId,
+        }
       })
     }
 

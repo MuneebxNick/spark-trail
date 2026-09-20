@@ -6,12 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { SparkMark } from './spark-mark'
 import { ThemeToggle } from './theme-toggle'
 import { UserAvatar } from './user-avatar'
+import { NotificationsPopover } from './notifications-popover'
 import { logoutUser } from '@/actions/auth'
 import {
   TransitionLink,
   useRouteTransition,
 } from '@/components/animations/route-transition'
-import { LogOut, Plus, Settings } from 'lucide-react'
+import { LogOut, Plus, Settings, Bell } from 'lucide-react'
 
 interface UserProps {
   id: string
@@ -27,11 +28,18 @@ const NAV_ITEMS: { name: string; href: string; badge?: string }[] = [
   { name: 'My Trails', href: '/trails' },
 ]
 
-export function AppHeader({ user }: { user: UserProps }) {
+export function AppHeader({ 
+  user,
+  unreadNotificationsCount = 0
+}: { 
+  user: UserProps
+  unreadNotificationsCount?: number
+}) {
   const pathname = usePathname()
   const { transitionTo } = useRouteTransition()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
 
   const isItemActive = (href: string) => {
     if (href === '/trails') {
@@ -179,6 +187,27 @@ export function AppHeader({ user }: { user: UserProps }) {
             </div>
           </TransitionLink>
 
+          {/* Notifications Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setIsNotificationsOpen((prev) => !prev)}
+              className="relative flex h-8 w-8 items-center justify-center rounded-full text-[#737373] dark:text-[#A1A1AA] hover:text-[#111111] dark:hover:text-[#FFFFFF] hover:bg-[#111111]/5 dark:hover:bg-white/10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7857FF]"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-[2px] right-[2px] flex h-[7px] w-[7px] pointer-events-none">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-[7px] w-[7px] bg-red-500"></span>
+                </span>
+              )}
+            </button>
+            <NotificationsPopover 
+              isOpen={isNotificationsOpen} 
+              onClose={() => setIsNotificationsOpen(false)} 
+            />
+          </div>
+
           {/* Settings Link */}
           <TransitionLink
             href="/settings"
@@ -302,6 +331,20 @@ export function AppHeader({ user }: { user: UserProps }) {
               </nav>
 
               <div className="pt-2 border-t border-[#111111]/[0.08] dark:border-white/10 space-y-1">
+                <button
+                  onClick={() => setIsNotificationsOpen(true)}
+                  className="w-full flex items-center gap-2 text-[13.5px] font-medium text-[#111111] dark:text-[#FFFFFF] py-2 justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4 text-[#7857FF]" />
+                    <span>Notifications</span>
+                  </div>
+                  {unreadNotificationsCount > 0 && (
+                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                    </span>
+                  )}
+                </button>
                 <TransitionLink
                   href="/settings"
                   onClick={() => setMobileMenuOpen(false)}

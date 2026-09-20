@@ -41,6 +41,7 @@ build/
 # Tool caches
 .turbo/
 .eslintcache
+*.tsbuildinfo
 
 # IDE
 .idea/

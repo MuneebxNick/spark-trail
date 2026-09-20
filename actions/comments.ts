@@ -33,6 +33,23 @@ export async function addComment(trailId: string, content: string) {
       },
     })
 
+    const trail = await db.trail.findUnique({
+      where: { id: validated.trailId },
+      select: { userId: true },
+    })
+
+    if (trail && trail.userId !== user.id) {
+      await db.notification.create({
+        data: {
+          type: 'NEW_COMMENT',
+          actorId: user.id,
+          recipientId: trail.userId,
+          trailId: validated.trailId,
+          commentId: comment.id,
+        },
+      })
+    }
+
     revalidatePath(`/trails/${trailId}`)
     revalidatePath(`/explore`)
 

@@ -15,6 +15,12 @@ enum ProgressStatus {
   WIN
 }
 
+enum NotificationType {
+  NEW_SPARK
+  NEW_COMMENT
+  NEW_FOLLOWER
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -31,6 +37,9 @@ model User {
   sparks    Spark[]
   followers Follows[] @relation("following")
   following Follows[] @relation("follower")
+
+  notificationsReceived Notification[] @relation("recipient")
+  notificationsTriggered Notification[] @relation("actor")
 }
 
 model Follows {
@@ -60,6 +69,7 @@ model Trail {
   entries  TrailEntry[]
   sparks   Spark[]
   comments Comment[]
+  notifications Notification[]
 
   @@index([userId])
   @@index([status])
@@ -103,5 +113,29 @@ model Comment {
   trailId String
   trail   Trail  @relation(fields: [trailId], references: [id], onDelete: Cascade)
 
+  @@index([trailId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  recipientId String
+  recipient   User   @relation("recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  actorId String
+  actor   User   @relation("actor", fields: [actorId], references: [id], onDelete: Cascade)
+
+  trailId String?
+  trail   Trail?  @relation(fields: [trailId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  // We can just store the commentId if needed, or link it:
+  // comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+  @@index([actorId])
   @@index([trailId])
 }
