@@ -7,7 +7,7 @@ import {
   useEffect,
   useCallback,
   useRef,
-  startTransition,
+  useTransition,
   ReactNode,
   MouseEvent,
 } from 'react'
@@ -34,6 +34,7 @@ type InitialLoadStage = 'logo' | 'loader' | 'numberFade' | 'exitLogo' | 'exitBar
 export function RouteTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
+  const [isPending, startNavigationTransition] = useTransition()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [loadStage, setLoadStage] = useState<InitialLoadStage>('logo')
@@ -108,28 +109,62 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
   }, [pathname])
 
   const targetPathRef = useRef<string | null>(null)
+  const isNavigatingRef = useRef(false)
+  const wasPendingRef = useRef(false)
+  const previousPathnameRef = useRef(pathname)
+  const safetyTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Coordinated route transition: detect when destination route has loaded
+  // Track pathname updates for browser back/forward and idle states
   useEffect(() => {
-    if (targetPathRef.current) {
-      const currentCleanPath = pathname.split('?')[0]
-      const targetCleanPath = targetPathRef.current.split('?')[0]
-
-      if (currentCleanPath === targetCleanPath) {
-        targetPathRef.current = null
-        // Hold briefly so DOM and components are mounted, then release curtain
-        const timer = setTimeout(() => {
-          setIsTransitioning(false)
-        }, 120)
-        return () => clearTimeout(timer)
-      }
+    if (!isNavigatingRef.current) {
+      previousPathnameRef.current = pathname
     }
   }, [pathname])
 
+  // Coordinated route transition: detect when destination route has actually committed to DOM
+  useEffect(() => {
+    if (isPending) {
+      wasPendingRef.current = true
+    }
+
+    if (isNavigatingRef.current) {
+      const pathChanged = pathname !== previousPathnameRef.current
+      const transitionFinished = wasPendingRef.current && !isPending
+
+      if (pathChanged || transitionFinished) {
+        isNavigatingRef.current = false
+        wasPendingRef.current = false
+        targetPathRef.current = null
+        previousPathnameRef.current = pathname
+
+        if (safetyTimerRef.current) {
+          clearTimeout(safetyTimerRef.current)
+          safetyTimerRef.current = null
+        }
+
+        // Allow one frame for new route DOM elements to mount and paint before revealing
+        const timer = setTimeout(() => {
+          setIsTransitioning(false)
+        }, 60)
+
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [isPending, pathname])
+
   const transitionTo = useCallback(
     (href: string) => {
-      // Don't transition if already on the exact target pathname
-      if (!href || href === pathname) return
+      // Don't transition if already on the exact target href or currently transitioning
+      if (!href || isTransitioning) return
+
+      // Clean compare against current location
+      if (typeof window !== 'undefined') {
+        const currentFullUrl =
+          window.location.pathname + window.location.search + window.location.hash
+        if (href === currentFullUrl || href === window.location.pathname) {
+          return
+        }
+      }
 
       // Check prefers-reduced-motion
       if (
@@ -141,24 +176,33 @@ export function RouteTransitionProvider({ children }: { children: ReactNode }) {
       }
 
       targetPathRef.current = href
+      previousPathnameRef.current = pathname
+      wasPendingRef.current = false
       setIsTransitioning(true)
 
-      // Phase 1: Exit curtain sweep UP to cover viewport (480ms), then push route
-      setTimeout(() => {
-        startTransition(() => {
+      // Phase 1: Exit curtain sweep UP to cover viewport (480ms duration).
+      // Navigation is ONLY dispatched once the curtain has completely covered the source page.
+      const navTimer = setTimeout(() => {
+        isNavigatingRef.current = true
+        startNavigationTransition(() => {
           router.push(href)
         })
 
-        // Safety fallback: if navigation takes longer than 2200ms, clear curtain
-        setTimeout(() => {
-          if (targetPathRef.current) {
+        // Safety fallback (8s) only for catastrophic network drops/aborts.
+        // Curtain stays covering the UI during normal server component loading.
+        safetyTimerRef.current = setTimeout(() => {
+          if (isNavigatingRef.current) {
+            isNavigatingRef.current = false
+            wasPendingRef.current = false
             targetPathRef.current = null
             setIsTransitioning(false)
           }
-        }, 2200)
+        }, 8000)
       }, 480)
+
+      return () => clearTimeout(navTimer)
     },
-    [pathname, router]
+    [pathname, router, isTransitioning]
   )
 
   const activeTransitioningState = isTransitioning || isInitialLoad
